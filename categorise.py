@@ -131,10 +131,15 @@ def main(glossary_path, masterlist_path):
 # Checks the credentials offered at a specific institution to see if it is a possible WHED candidate, takes the institution dict, the cred list, and the cred ws as input
 def candidate_check(inst, cred_list, cricos_cred):
     # loop through all credentials in the list
-        # if the cricos_id  matches the one in the sheet (column [0])
-            # if the course level (column [12]) is in cred_list and not expired column[23] == "No"
-                # return True
-
+    for row in cricos_cred.iter_rows(min_row = 2, values_only = True):
+        cricos_id = str(row[0])
+        # If the current credential is offered at the institution being checked, get the credential type
+        if inst["cricos_id"] == cricos_id:
+            cred_type = str(row[12])
+            expired = str(row[23])
+            # If the credential type is in the list of postgrad types and it's not expired, the institution is WHED candidate
+            if cred_type in cred_list and expired == "No":
+                return True
 
     return False
 
