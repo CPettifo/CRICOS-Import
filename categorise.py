@@ -23,6 +23,7 @@ def main(glossary_path, masterlist_path):
     whed_levels = wb['whed_levels']
 
     ###Initialise Lists & Dicts###
+
     insts = []
 
 
@@ -58,6 +59,7 @@ def main(glossary_path, masterlist_path):
         inst = {
         "whed_id": None,
         "whed_name": None,
+        "whed_match_type": None,
         "cricos_id": str(row[0]),
         "cricos_name": str(row[2]),
         "cricos_trading": str(row[1]),
@@ -126,13 +128,22 @@ def main(glossary_path, masterlist_path):
 
 
 #TODO Flesh out this function
-# Checks the credentials offered at a specific institution to see if it is a possible WHED candidate
-def candidate_check(inst_name, cred_list, cricos_cred):
-    print(inst_name)
+# Checks the credentials offered at a specific institution to see if it is a possible WHED candidate, takes the institution dict, the cred list, and the cred ws as input
+def candidate_check(inst, cred_list, cricos_cred):
+    # 
     return True
 
-def whed_check(inst_name):
-    return 1
+
+# Will try to match institutions in CRICOS to an export from the WHED and will return the instituion name, id, and match type (name, site, address) if it matches
+# Takes the institution dict and the whed_institution sheet as input
+def whed_check(inst, whed_inst):
+    # check by name
+        # if matches return whed_name, whed_id, match_type = "name"
+    # check by website
+        # if matches return whed_name, whed_id, match_type = "web"
+    # check by address
+        # if matches return whed_name, whed_id, match_type = "address"
+    return True
 
 # Takes the list of postgrad codes and the whed_levels sheet as input and returns a list of course names at post-grad level
 def get_postgrad_list(postgrad_codes, whed_levels):
