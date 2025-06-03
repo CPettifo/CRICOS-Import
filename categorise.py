@@ -1,3 +1,6 @@
+from openpyxl import load_workbook #type: ignore
+import os
+
 # CRICOS is an Australian Credential Registry that does not have an API, they do however regularly export from their database and release exports to the public as excel spreadsheets.
 # The World Higher Education Database (WHED) aims to catalogue every higher education institution in the world including institutional and credential information.
 
@@ -6,9 +9,8 @@
 
 # Before the process begins the latest list of WHED-recognised institutions in Australia is exported with their ID and added as a sheet in the masterlist
 
+# The main method is called by the main.py script
 def main(masterlist_path):
-        
-
     ###Initialise Variables###
     # WHED-Recognised Institutions not recognised by CRICOS
     whed_check = 0
@@ -19,18 +21,22 @@ def main(masterlist_path):
     # Non WHED-Level Institutions
     whed_excluded = 0
 
+    # Read masterlist
+    print(f"Opening masterlist: {masterlist_path}")
+    wb = load_workbook(masterlist_path)
+
+    # open the whed_levels sheet
+    whed_levels = wb['whed_levels']
+
     ###Initialise Lists###
 
     # List of Level Codes that are considered post-grad by the WHED
     postgrad_codes = ["6C", "7A", "7B", "7C", "7D"]
 
     # List of credential titles from the spreadsheet (this could later be turned into a query by )
-    postgrad_list = get_postgrad_list(postgrad_codes)
+    postgrad_list = get_postgrad_list(postgrad_codes, whed_levels)
 
-
-    # Read masterlist
-
-
+    print(f"List of postgrad credentials offered in this country:\n{postgrad_list}")
 
 
     # For each institution
@@ -50,7 +56,8 @@ def main(masterlist_path):
         # in CRICOS but not WHED-level (i.e. doesn't offer Honours+)
         # Not in CRICOS or name mismatch
 
-
+    # Save output
+    wb.save("output.xlsx")
 
 #TODO Flesh out this function
 # Checks the credentials offered at a specific institution to see if it is a possible WHED candidate
@@ -63,16 +70,14 @@ def output_summary():
     return 0
 
 
-# Takes the list of postgrad codes as input and compares all credentials in the whed_levels sheet
-def get_postgrad_list(postgrad_codes):
+# Takes the list of postgrad codes and the whed_levels sheet as input and returns a list of course names at post-grad level
+def get_postgrad_list(postgrad_codes, whed_levels):
     postgrad_list = []
-    # open masterlist
-
-
-
+    
     # for row of credential name
-
-        # if column 2 in postgrad_codes:
-            #postgrad_list.append(name of cred)
-
+    for i in whed_levels:
+        cred_name = str(whed_levels['cred_name'])
+        level_code= str(whed_levels['level_code'])
+        if level_code in postgrad_codes:
+            postgrad_list.add(cred_name)
     return postgrad_list
