@@ -56,6 +56,8 @@ def main(glossary_path, masterlist_path):
     # For each institution
     for row in cricos_inst.iter_rows(min_row=2, values_only = True):
         # Offers >= Bachelor Honours, these are WHED candidates (will have to check whether they have a certain number of graduate cohorts)
+        
+        # insts are by default excluded 
         inst = {
         "whed_id": None,
         "whed_name": None,
@@ -63,18 +65,12 @@ def main(glossary_path, masterlist_path):
         "cricos_id": str(row[0]),
         "cricos_name": str(row[2]),
         "cricos_trading": str(row[1]),
-        "status": None
+        "status": "excluded",
+        "match_type": None
         }
         
-        
-
-        if(candidate_check(inst, postgrad_list, cricos_cred)):
-            inst["status"] = "candidate"
-
-        # Else whed_excluded
-        else:
-            inst["status"] = "excluded"
-
+        # and have their status changed to candidate within the candidate_check function
+        inst = (candidate_check(inst, postgrad_list, cricos_cred))
         
 
         #TODO Create function that takes as input the institution name and compares it to the WHED names, addresses or websites
@@ -138,8 +134,9 @@ def candidate_check(inst, cred_list, cricos_cred):
             expired = str(row[23])
             # If the credential type is in the list of postgrad types and it's not expired, the institution is WHED candidate
             if cred_type in cred_list and expired == "No":
-                return True
-    return False
+                inst["status"] = "candidate"
+                return inst
+    return inst
 
 
 # Will try to match institutions in CRICOS to an export from the WHED and will return the instituion name, id, and match type (name, site, address) if it matches
