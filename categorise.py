@@ -6,7 +6,7 @@
 
 # Before the process begins the latest list of WHED-recognised institutions in Australia is exported with their ID and added as a sheet in the masterlist
 
-def main():
+def main(masterlist_path):
         
 
     ###Initialise Variables###
@@ -25,7 +25,7 @@ def main():
     postgrad_codes = ["6C", "7A", "7B", "7C", "7D"]
 
     # List of credential titles from the spreadsheet (this could later be turned into a query by )
-    postgrad_list = get_postgrad_list()
+    postgrad_list = get_postgrad_list(postgrad_codes)
 
 
     # Read masterlist
@@ -67,6 +67,8 @@ def output_summary():
 def get_postgrad_list(postgrad_codes):
     postgrad_list = []
     # open masterlist
+
+
 
     # for row of credential name
 
