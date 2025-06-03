@@ -10,7 +10,7 @@ import os
 # Before the process begins the latest list of WHED-recognised institutions in Australia is exported with their ID and added as a sheet in the masterlist
 
 # The main method is called by the main.py script
-def main(masterlist_path):
+def main(glossary_path):
     ###Initialise Variables###
     # WHED-Recognised Institutions not recognised by CRICOS
     whed_check = 0
@@ -21,9 +21,13 @@ def main(masterlist_path):
     # Non WHED-Level Institutions
     whed_excluded = 0
 
+    if not os.path.exists(glossary_path):
+        print(f"Masterlist not found {glossary_path}")
+        return
+
     # Read masterlist
-    print(f"Opening masterlist: {masterlist_path}")
-    wb = load_workbook(masterlist_path)
+    print(f"Opening glossary: {glossary_path}")
+    wb = load_workbook(glossary_path)
 
     # open the whed_levels sheet
     whed_levels = wb['whed_levels']
@@ -34,6 +38,7 @@ def main(masterlist_path):
     postgrad_codes = ["6C", "7A", "7B", "7C", "7D"]
 
     # List of credential titles from the spreadsheet (this could later be turned into a query by )
+    print("Checking postgrad degrees")
     postgrad_list = get_postgrad_list(postgrad_codes, whed_levels)
 
     print(f"List of postgrad credentials offered in this country:\n{postgrad_list}")
@@ -75,9 +80,9 @@ def get_postgrad_list(postgrad_codes, whed_levels):
     postgrad_list = []
     
     # for row of credential name
-    for i in whed_levels:
-        cred_name = str(whed_levels['cred_name'])
-        level_code= str(whed_levels['level_code'])
+    for row in whed_levels.iter_rows(min_row=2, values_only = True):
+        cred_name = str(row[0])
+        level_code= str(row[1])
         if level_code in postgrad_codes:
-            postgrad_list.add(cred_name)
+            postgrad_list.append(cred_name)
     return postgrad_list

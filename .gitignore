@@ -1,1 +1,5 @@
 masterlist.xlsx
+glossary.xlsx
+
+__pycache__/
+*.py[cod]
