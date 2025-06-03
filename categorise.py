@@ -17,7 +17,9 @@
 
     #TODO Create a function that will take as input an institution name, list of credentials for each category
 
+
     # Offers <= Bachelor Degrees, these are Not WHED-level
+
 
     # Offers >= Bachelor Honours, these are WHED candidates (will have to check whether they have a certain number of graduate cohorts)
 
@@ -32,11 +34,11 @@
 
 
 
-# Identify relevant columns
+#TODO Identify relevant CRICOS columns
 
 
 
-# Identify target schema
+#TODO Identify target schema
 
 
 
