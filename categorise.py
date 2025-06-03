@@ -66,6 +66,8 @@ def main(glossary_path, masterlist_path):
         "status": None
         }
         
+        
+
         if(candidate_check(inst, postgrad_list, cricos_cred)):
             inst["status"] = "candidate"
 
@@ -73,19 +75,16 @@ def main(glossary_path, masterlist_path):
         else:
             inst["status"] = "excluded"
 
-        insts.append(inst)
+        
 
         #TODO Create function that takes as input the institution name and compares it to the WHED names, addresses or websites
         # Same as above but name matches WHED-Recognised institutions
-        # whed_confirmed.append(inst_name)
+        # inst["status"] = "confirmed"
 
 
-        # Add column for excluded categories, 
-        # in CRICOS but not WHED-level (i.e. doesn't offer Honours+)
-
-
-        # Not in CRICOS or name mismatch
-        # whed_verify.append(inst_name)
+        # Not in CRICOS or name mismatch (but in WHED)
+        # inst["status"] = "verify"
+        insts.append(inst)
 
     # Save output with appropriate WHED OrgIDs added to matched institutions
     # wb.save("output.xlsx")
@@ -140,7 +139,6 @@ def candidate_check(inst, cred_list, cricos_cred):
             # If the credential type is in the list of postgrad types and it's not expired, the institution is WHED candidate
             if cred_type in cred_list and expired == "No":
                 return True
-
     return False
 
 
