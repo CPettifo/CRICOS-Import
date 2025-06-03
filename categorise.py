@@ -130,8 +130,13 @@ def main(glossary_path, masterlist_path):
 #TODO Flesh out this function
 # Checks the credentials offered at a specific institution to see if it is a possible WHED candidate, takes the institution dict, the cred list, and the cred ws as input
 def candidate_check(inst, cred_list, cricos_cred):
-    # 
-    return True
+    # loop through all credentials in the list
+        # if the cricos_id  matches the one in the sheet (column [0])
+            # if the course level (column [12]) is in cred_list and not expired column[23] == "No"
+                # return True
+
+
+    return False
 
 
 # Will try to match institutions in CRICOS to an export from the WHED and will return the instituion name, id, and match type (name, site, address) if it matches
