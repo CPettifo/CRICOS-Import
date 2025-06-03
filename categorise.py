@@ -10,22 +10,12 @@ import os
 # Before the process begins the latest list of WHED-recognised institutions in Australia is exported with their ID and added as a sheet in the masterlist
 
 # The main method is called by the main.py script
-def main(glossary_path):
-    ###Initialise Variables###
-    # WHED-Recognised Institutions not recognised by CRICOS
-    whed_check = 0
-
-    # WHED-Candidates within CRICOS
-    whed_candidates = 0
-
-    # Non WHED-Level Institutions
-    whed_excluded = 0
-
+def main(glossary_path, masterlist_path):
     if not os.path.exists(glossary_path):
-        print(f"Masterlist not found {glossary_path}")
+        print(f"File not found {glossary_path}")
         return
 
-    # Read masterlist
+    # Read glossary
     print(f"Opening glossary: {glossary_path}")
     wb = load_workbook(glossary_path)
 
@@ -33,6 +23,19 @@ def main(glossary_path):
     whed_levels = wb['whed_levels']
 
     ###Initialise Lists###
+    
+    # Potential whed candidates
+    whed_candidates = []
+
+    # Non-eligible institutions
+    whed_excluded = []
+
+    # WHED-Level institutions not in CRICOS
+    whed_verify = []
+
+    # Potential whed candidates that are in CRICOS
+    whed_confirmed = []
+
 
     # List of Level Codes that are considered post-grad by the WHED
     postgrad_codes = ["6C", "7A", "7B", "7C", "7D"]
@@ -44,35 +47,60 @@ def main(glossary_path):
     print(f"List of postgrad credentials offered in this country:\n{postgrad_list}")
 
 
+    # open masterlist
+    if not os.path.exists(masterlist_path):
+        print(f"File not found {masterlist_path}")
+        return
+
+    # Read masterlist
+    print(f"Opening masterlist: {masterlist_path}, be patient...")
+    wb = load_workbook(masterlist_path)
+    print(f"Masterlist open")
+    
+    # Open the institution sheet
+    cricos_inst = wb['cricos_inst']
+    
+    # Open the courses sheet
+    cricos_cred = wb['cricos_cred']
+
     # For each institution
-        # Check that they are considered by CRICOS as Active
-
-        #TODO Create a function that will take as input an institution name, list of credentials for each category
-
+    for row in cricos_inst.iter_rows(min_row=2, values_only = True):
         # Offers >= Bachelor Honours, these are WHED candidates (will have to check whether they have a certain number of graduate cohorts)
+        inst_name = str(row[2])
 
+        if (whed_check(inst_name, postgrad_list, cricos_cred)):
+            whed_candidates.append(inst_name)
 
         # Else whed_excluded
+        else:
+            whed_excluded.append(inst_name)
 
         #TODO Create function that takes as input the institution name
         # Same as above but name matches WHED-Recognised institutions
+        # whed_confirmed.append(inst_name)
+
 
         # Add column for excluded categories, 
         # in CRICOS but not WHED-level (i.e. doesn't offer Honours+)
         # Not in CRICOS or name mismatch
+        # whed_verify.append(inst_name)
 
-    # Save output
-    wb.save("output.xlsx")
+    # Save output with appropriate WHED OrgIDs added to matched institutions
+    # wb.save("output.xlsx")
+
+    print("Analysis complete")
+    print(f"Potential WHED level candidates: {len(whed_candidates)}")
+    print(f"Excluded instititions based on degree offerings: {len(whed_excluded)}")
+    print(f"Institutions in WHED that are do not offer postgrad according to CRICOS: {len(whed_verify)}")
+    print(f"WHED institutions confirmed by CRICOS: {len(whed_confirmed)}")
+
 
 #TODO Flesh out this function
 # Checks the credentials offered at a specific institution to see if it is a possible WHED candidate
-def whed_check():
-    return 0
+def whed_check(inst_name, cred_list, cricos_cred):
+    print(inst_name)
+    return True
 
-
-# Prints a summary of the categorisation process in the terminal
-def output_summary():
-    return 0
 
 
 # Takes the list of postgrad codes and the whed_levels sheet as input and returns a list of course names at post-grad level

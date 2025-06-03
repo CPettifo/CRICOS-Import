@@ -11,7 +11,7 @@ user_input = "Y"
 
 if user_input == "Y":
     # Categorise institutions (WHED-Recognised, WHED-Candidate, etc.)
-    categorise.main(glossary_path)
+    categorise.main(glossary_path, masterlist_path)
 
 
 print("Continuing")
