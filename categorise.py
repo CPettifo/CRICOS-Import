@@ -22,7 +22,7 @@ def main(glossary_path, masterlist_path):
     # open the whed_levels sheet
     whed_levels = wb['whed_levels']
 
-    ###Initialise Lists###
+    ###Initialise Lists & Dicts###
     
     # Potential whed candidates
     whed_candidates = []
@@ -66,29 +66,47 @@ def main(glossary_path, masterlist_path):
     # For each institution
     for row in cricos_inst.iter_rows(min_row=2, values_only = True):
         # Offers >= Bachelor Honours, these are WHED candidates (will have to check whether they have a certain number of graduate cohorts)
+        
         inst_name = str(row[2])
-
-        if (whed_check(inst_name, postgrad_list, cricos_cred)):
-            whed_candidates.append(inst_name)
+        inst_trading_name = str(row[1])
+        if (candidate_check(inst_name, postgrad_list, cricos_cred)):
+            whed_candidates.append(inst_details)
 
         # Else whed_excluded
         else:
-            whed_excluded.append(inst_name)
+            whed_excluded.append(inst_details)
 
-        #TODO Create function that takes as input the institution name
+        #TODO Create function that takes as input the institution name and compares it to the WHED names, addresses or websites
         # Same as above but name matches WHED-Recognised institutions
         # whed_confirmed.append(inst_name)
 
 
         # Add column for excluded categories, 
         # in CRICOS but not WHED-level (i.e. doesn't offer Honours+)
+
+
         # Not in CRICOS or name mismatch
         # whed_verify.append(inst_name)
 
     # Save output with appropriate WHED OrgIDs added to matched institutions
     # wb.save("output.xlsx")
+    print("----------List of excluded institutions----------")
+    for inst in whed_excluded:
+        print(inst)
 
-    print("Analysis complete")
+    print("----------List of confirmed institutions---------")
+    for inst in whed_confirmed:
+        print(inst)
+
+    print("----------List of Potential WHED Candidates----------")
+    for inst in whed_candidates:
+        print(inst)
+
+    print("----------List of institutions to check validity-----")
+    for inst in whed_verify:
+        print(inst)
+
+    print("Analysis complete (for details scroll up)")
     print(f"Potential WHED level candidates: {len(whed_candidates)}")
     print(f"Excluded instititions based on degree offerings: {len(whed_excluded)}")
     print(f"Institutions in WHED that are do not offer postgrad according to CRICOS: {len(whed_verify)}")
@@ -97,11 +115,11 @@ def main(glossary_path, masterlist_path):
 
 #TODO Flesh out this function
 # Checks the credentials offered at a specific institution to see if it is a possible WHED candidate
-def whed_check(inst_name, cred_list, cricos_cred):
+def candidate_check(inst_name, cred_list, cricos_cred):
     print(inst_name)
     return True
 
-
+def whed_check(inst_name)
 
 # Takes the list of postgrad codes and the whed_levels sheet as input and returns a list of course names at post-grad level
 def get_postgrad_list(postgrad_codes, whed_levels):
