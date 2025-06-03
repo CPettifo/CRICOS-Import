@@ -147,21 +147,25 @@ def candidate_check(inst, cred_list, cricos_cred):
 # Will try to match institutions in CRICOS to an export from the WHED and will return the instituion name, id, and match type (name, site, address) if it matches
 # Takes the institution dict and the whed_institution sheet as input
 def whed_check(inst, whed_inst):
-    foobar = "z"
-    # check by name
-        # if matches return whed_name, whed_id, match_type = "name"
-    if foobar:
-        inst["match_type"] = "name"
-    # check by website
-    if foobar:
-        # if matches return whed_name, whed_id, match_type = "web"
-        inst["match_type"] = "web"
-    if foobar:
-        # if matches return whed_name, whed_id, match_type = "address"
-        inst["match_type"] = "address"
+    for row in whed_inst:
+        #Placeholder
+        foobar = "z"
+        # if webpages match
+        if foobar:
+            inst["match_type"] = "web"
+        # if street addresses match
+        elif foobar:
+            inst["match_type"] = "address"
+        # if names match
+        elif foobar:
+            inst["match_type"] = "name"
+    
+    # If there weas a match, congrats it's a confirmed whed institution
     if inst["match_type"] != None:
         inst["status"] = "confirmed"
-    
+    # Otherwise it needs to be flagged for verification by Data Officers
+    else:
+        inst["status"] = "verify"
     return inst
 
 # Takes the list of postgrad codes and the whed_levels sheet as input and returns a list of course names at post-grad level
