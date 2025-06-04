@@ -55,9 +55,10 @@ def main(masterlist_path, postgrad_codes):
         inst = {
         "whed_id": None,
         "whed_name": None,
+        "whed_name_eng": None,
         "ext_id": str(row[1]),
-        "ext_name": str(row[2]),
-        "ext_trading": str(row[3]),
+        "ext_name": str(row[2]).lower(),
+        "ext_trading": str(row[3]).lower(),
         "status": "ineligible",
         "whed_status": None,
         "match_type": None
@@ -157,9 +158,9 @@ def whed_check(inst, inst_supp, whed_inst):
         # Have all whed names be a list that can be iterated to compare to external names
         whed_names = []
         
-        whed_names.append (str(row[2]))
-        whed_names.append (str(row[3]))
-        whed_names.append (str(row[4]))
+        whed_names.append (str(row[2]).lower())
+        whed_names.append (str(row[3]).lower())
+        whed_names.append (str(row[4]).lower())
         whed_url = tidy_url(str(row[5]))
         whed_address = str(row[6])
 
@@ -186,7 +187,7 @@ def whed_check(inst, inst_supp, whed_inst):
     # If there was a match link the whed ID and check whether it should remain a WHED candidate
     if inst["match_type"] != None:
         inst["whed_id"] = whed_id
-        inst["whed_name"] = whed_names[1]
+        inst["whed_name_eng"] = whed_names[1]
         if inst["status"] == "candidate":
             inst["status"] = "confirmed"
         else:
