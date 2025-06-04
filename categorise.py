@@ -10,14 +10,15 @@ import os
 # Before the process begins the latest list of WHED-recognised institutions in Australia is exported with their ID and added as a sheet in the masterlist
 
 # The main method is called by the main.py script
-def main(glossary_path, masterlist_path, postgrad_codes):
-    if not os.path.exists(glossary_path):
-        print(f"File not found {glossary_path}")
+def main(masterlist_path, postgrad_codes):
+    # open masterlist
+    if not os.path.exists(masterlist_path):
+        print(f"File not found {masterlist_path}")
         return
 
-    # Read glossary
-    print(f"Opening glossary: {glossary_path}")
-    wb = load_workbook(glossary_path)
+    # Read masterlist
+    print(f"Opening masterlist: {masterlist_path}, be patient this takes a sec...")
+    wb = load_workbook(masterlist_path)
 
     # open the whed_levels sheet
     whed_levels = wb['whed_levels']
@@ -133,7 +134,7 @@ def candidate_check(inst, cred_list, ext_cred):
     for row in ext_cred.iter_rows(min_row = 2, values_only = True):
         ext_id = str(row[0])
         # If the current credential is offered at the institution being checked, get the credential type
-        if inst["cricos_id"] == ext_id:
+        if inst["ext_id"] == ext_id:
             cred_type = str(row[3])
             expired = str(row[2])
             # If the credential type is in the list of postgrad types and it's not expired, the institution is WHED candidate
