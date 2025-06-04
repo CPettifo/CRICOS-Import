@@ -130,14 +130,14 @@ def main(glossary_path, masterlist_path, postgrad_codes):
 
 #TODO Flesh out this function
 # Checks the credentials offered at a specific institution to see if it is a possible WHED candidate, takes the institution dict, the cred list, and the cred ws as input
-def candidate_check(inst, cred_list, cricos_cred):
+def candidate_check(inst, cred_list, ext_cred):
     # loop through all credentials in the list
-    for row in cricos_cred.iter_rows(min_row = 2, values_only = True):
-        cricos_id = str(row[0])
+    for row in ext_cred.iter_rows(min_row = 2, values_only = True):
+        ext_id = str(row[0])
         # If the current credential is offered at the institution being checked, get the credential type
-        if inst["cricos_id"] == cricos_id:
-            cred_type = str(row[12])
-            expired = str(row[23])
+        if inst["cricos_id"] == ext_id:
+            cred_type = str(row[3])
+            expired = str(row[2])
             # If the credential type is in the list of postgrad types and it's not expired, the institution is WHED candidate
             if cred_type in cred_list and expired == "No":
                 inst["status"] = "candidate"
@@ -172,12 +172,11 @@ def whed_check(inst, whed_inst):
 
 # Takes the list of postgrad codes and the whed_levels sheet as input and returns a list of course names at post-grad level
 def get_postgrad_list(postgrad_codes, whed_levels):
-    postgrad_list = []
-    
     # for row of credential name
     for row in whed_levels.iter_rows(min_row=2, values_only = True):
         cred_name = str(row[0])
         level_code= str(row[1])
         if level_code in postgrad_codes:
-            postgrad_list.append(cred_name)
-    return postgrad_list
+            # append to the list of NQF codes in case the source spreadsheet uses those instead of names
+            postgrad_codes.append(cred_name)
+    return postgrad_codes
