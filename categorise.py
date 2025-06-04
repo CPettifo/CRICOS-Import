@@ -123,7 +123,7 @@ def main(glossary_path, masterlist_path, postgrad_codes):
 
     print("Writing to output.xlsx, stand by")
 
-    # institution dicts in excel format to allow for later verification by Data Officers
+    # write institutions to excel format to allow for later verification by Data Officers
     write_output(insts)
 
 
@@ -160,12 +160,14 @@ def whed_check(inst, whed_inst):
         elif foobar:
             inst["match_type"] = "name"
     
-    # If there weas a match, congrats it's a confirmed whed institution
-    if inst["match_type"] != None:
-        inst["status"] = "confirmed"
-    # Otherwise it needs to be flagged for verification by Data Officers
-    else:
-        inst["status"] = "verify"
+        # If there weas a match, congrats it's a confirmed whed institution
+        if inst["match_type"] != None:
+            # add appropriate WHED OrgIDs added to matched institutions
+            inst["status"] = "confirmed"
+        # Otherwise the WHED Org needs to be flagged for verification by Data Officers
+        else:
+            inst["status"] = "verify"
+
     return inst
 
 # Takes the list of postgrad codes and the whed_levels sheet as input and returns a list of course names at post-grad level
@@ -181,7 +183,9 @@ def get_postgrad_list(postgrad_codes, whed_levels):
 
 
 def write_output(insts):
-    # appropriate WHED OrgIDs added to matched institutions
+     
+    
+    
     # wb.save("output.xlsx")
 
     return 0
