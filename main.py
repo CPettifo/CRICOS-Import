@@ -6,7 +6,7 @@
 
 # there should be three spreadsheets in your workbook
 # ext_inst is a list of the institutions from the recognised government or credential recognition body
-# It should have the following columns in this order: institution ID, institution name, institution alternative name, institution homepage,
+# It should have the following columns in this order: row index, institution ID, institution name, institution alternative name, institution homepage,
 # a concatenation of the institutional address
 # 
 # ext_cred is a list of the credentials offered 
