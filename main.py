@@ -15,8 +15,12 @@ glossary_path = "glossary.xlsx"
 user_input = "Y"
 
 if user_input == "Y":
+    
+    # list of level codes that categorise a degree as postgrad in the WHED
+    postgrad_codes = ["6C", "7A", "7B", "7C", "7D"]
+    
     # Categorise institutions (WHED-Recognised, WHED-Candidate, etc.)
-    categorise.main(glossary_path, masterlist_path)
+    categorise.main(glossary_path, masterlist_path, postgrad_codes)
 
 
 print("Continuing")
