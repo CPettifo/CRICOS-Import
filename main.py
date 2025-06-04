@@ -16,7 +16,6 @@
 import categorise # type: ignore
 
 masterlist_path = "masterlist.xlsx"
-glossary_path = "glossary.xlsx"
 
 
 # Ask for user input if categorisation is required
@@ -31,6 +30,3 @@ if user_input == "Y":
 
     # Categorise institutions (WHED-Recognised, WHED-Candidate, etc.)
     categorise.main(masterlist_path, postgrad_codes)
-
-
-print("Continuing")

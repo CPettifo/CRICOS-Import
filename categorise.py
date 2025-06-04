@@ -11,6 +11,9 @@ import os
 
 # The main method is called by the main.py script
 def main(masterlist_path, postgrad_codes):
+    print("Got here")
+
+
     # open masterlist
     if not os.path.exists(masterlist_path):
         print(f"File not found {masterlist_path}")
@@ -39,11 +42,6 @@ def main(masterlist_path, postgrad_codes):
     if not os.path.exists(masterlist_path):
         print(f"File not found {masterlist_path}")
         return
-
-    # Read masterlist
-    print(f"Opening masterlist: {masterlist_path}, be patient this takes a sec...")
-    wb = load_workbook(masterlist_path)
-    print(f"Masterlist open")
     
     # Open the CRICOS institution sheet
     ext_inst = wb['ext_inst']
