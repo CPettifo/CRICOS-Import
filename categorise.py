@@ -149,7 +149,7 @@ def whed_check(inst, inst_supp, whed_inst):
     ext_url = inst_supp["ext_url"]
     ext_address = inst_supp["ext_address"]
 
-    for row in whed_inst:
+    for row in whed_inst.iter_rows(min_row=2, values_only = True):
         whed_id = str(row[0])
         
         # Have all whed names be a list that can be iterated to compare to external names
