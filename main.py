@@ -10,7 +10,7 @@
 # a concatenation of the institutional address
 # 
 # ext_cred is a list of the credentials offered 
-# It should have the following columns in this order: institution ID, institution name, whether credential is active (manually set this to "Yes" if it is not present in extraction)
+# It should have the following columns in this order: institution ID, institution name, whether credential is not expired (manually set this to "No" if it is not present in extraction)
 # Credential level (i.e. Bachelors, Masters, or NQF level), Course Name, FOS Levels if available and in descending order of hierarchy
 
 import categorise # type: ignore
