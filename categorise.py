@@ -142,6 +142,7 @@ def candidate_check(inst, cred_list, ext_cred):
 
 # Will try to match institutions in CRICOS to an export from the WHED and will return the instituion name, id, and match type (name, site, address) if it matches
 # Takes the institution dict and the whed_institution sheet as input
+
 def whed_check(inst, inst_supp, whed_inst):
     # For clarity and sanity I mapped everything to local variables
     ext_name = inst["ext_name"]
@@ -164,25 +165,31 @@ def whed_check(inst, inst_supp, whed_inst):
 
         foobar = "z"
         # check if webpages match first as it's the most definitive match
+        
+        # print(f"external url: {ext_url}\nwhed url: {whed_url}")
         if ext_url == whed_url:
             inst["match_type"] = "web"
+            break
         # TODO: This one is not a priority yet as there should be enough for the Data Officers with name and url matches
         elif foobar == 'w':
             inst["match_type"] = "address"
+            break
         # check if the external names match the whed names
         elif ext_name in whed_names or ext_name_alt in whed_names:
             inst["match_type"] = "name"
+            break
     
 
 
-        # If there was a match link the whed ID and check whether it should remain a WHED candidate
-        if inst["match_type"] != None:
-            inst["whed_id"] = whed_id
-            inst["whed_name"] = whed_names[1]
-            if inst["status"] == "candidate":
-                inst["status"] = "confirmed"
-            else:
-                inst["status"] = "verify"
+
+    # If there was a match link the whed ID and check whether it should remain a WHED candidate
+    if inst["match_type"] != None:
+        inst["whed_id"] = whed_id
+        inst["whed_name"] = whed_names[1]
+        if inst["status"] == "candidate":
+            inst["status"] = "confirmed"
+        else:
+            inst["status"] = "verify"
 
 
     return inst
