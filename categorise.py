@@ -11,9 +11,6 @@ import os
 
 # The main method is called by the main.py script
 def main(masterlist_path, postgrad_codes):
-    print("Got here")
-
-
     # open masterlist
     if not os.path.exists(masterlist_path):
         print(f"File not found {masterlist_path}")
@@ -26,6 +23,16 @@ def main(masterlist_path, postgrad_codes):
     # open the whed_levels sheet
     whed_levels = wb['whed_levels']
 
+    # Open the CRICOS institution sheet
+    ext_inst = wb['ext_inst']
+    
+    # Open the courses sheet
+    ext_cred = wb['ext_cred']
+
+    # Open the WHED institution sheet
+    whed_inst = wb['whed_inst']
+
+
     ###Initialise Lists & Dicts###
 
     insts = []
@@ -35,22 +42,7 @@ def main(masterlist_path, postgrad_codes):
     print("Checking postgrad degrees")
     postgrad_list = get_postgrad_list(postgrad_codes, whed_levels)
 
-    print(f"List of postgrad credentials offered in this country:\n{postgrad_list}")
-
-
-    # open masterlist
-    if not os.path.exists(masterlist_path):
-        print(f"File not found {masterlist_path}")
-        return
-    
-    # Open the CRICOS institution sheet
-    ext_inst = wb['ext_inst']
-    
-    # Open the courses sheet
-    ext_cred = wb['ext_cred']
-
-    # Open the WHED institution sheet
-    whed_inst = wb['whed_inst']
+    print(f"List of postgrad credentials offered in this country:\n{postgrad_list}")  
 
 
     # For each institution
@@ -72,8 +64,6 @@ def main(masterlist_path, postgrad_codes):
         # and have their status changed to candidate within the candidate_check function
         inst = candidate_check(inst, postgrad_list, ext_cred)
         
-
-
         # check whether the institution is in the WHED and update the dict as appropriate
         inst = whed_check(inst, whed_inst)
         
