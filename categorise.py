@@ -49,7 +49,7 @@ def main(masterlist_path, postgrad_codes):
     # For each institution
     for row in ext_inst.iter_rows(min_row=2, values_only = True):
         row_index = row[0]
-        # insts start excluded 
+        # insts are by default ineligible 
         inst = {
         "whed_id": None,
         "whed_name": None,
@@ -57,7 +57,7 @@ def main(masterlist_path, postgrad_codes):
         "ext_id": str(row[1]),
         "ext_name": str(row[2]),
         "ext_trading": str(row[3]),
-        "status": "excluded",
+        "status": "ineligible",
         "match_type": None
         }
 
@@ -65,11 +65,9 @@ def main(masterlist_path, postgrad_codes):
             "ext_url": str(row[4]),
             "ext_address": str(row[5])
         }
-
-        print(f"Processing row {row_index}: {inst['ext_name']}")
+        print(f"Row {row_index}")
+        print(inst['ext_name'], flush = True)
         
-        # and have their status changed to candidate within the candidate_check function
-        print("Checking WHED candidacy", flush = True)
         inst = candidate_check(inst, postgrad_list, ext_cred)
 
         # check whether the institution is in the WHED and update the dict as appropriate
@@ -82,16 +80,16 @@ def main(masterlist_path, postgrad_codes):
 
 
     whed_candidates = 0
-    whed_excluded = 0
+    whed_ineligible = 0
     whed_verify = 0
     whed_confirmed = 0
     whed_address = 0
 
-    print("----------List of excluded institutions----------")
+    print("----------List of ineligible institutions----------")
     for inst in insts:
-        if(inst["status"] == "excluded"):
+        if(inst["status"] == "ineligible"):
             print(inst["ext_name"])
-            whed_excluded += 1
+            whed_ineligible += 1
 
     print("----------List of confirmed institutions---------")
     for inst in insts:
@@ -115,7 +113,7 @@ def main(masterlist_path, postgrad_codes):
 
     print("Analysis complete (for details scroll up)")
     print(f"Potential WHED level candidates: {whed_candidates}")
-    print(f"Excluded instititions based on degree offerings: {whed_excluded}")
+    print(f"Ineligible instititions based on degree offerings: {whed_ineligible}")
     print(f"Institutions in WHED that are do not offer postgrad according to CRICOS: {whed_verify}")
     print(f"WHED institutions confirmed by CRICOS: {whed_confirmed}")
     print(f"Institutions with partial (or full) address matches: {whed_address}")
@@ -153,18 +151,20 @@ def whed_check(inst, inst_supp, whed_inst):
             # Replace http://, https://, www. with "" for both ext and whed and compare
             inst["match_type"] = "web"
         # if street addresses match, add it to verify with the match_type: address (it's a fuzzy match so will need to be checked)
-        elif foobar:
+        elif foobar == 'w':
             inst["match_type"] = "address"
         # if names match
-        elif foobar:
+        elif foobar == 'w':
             inst["match_type"] = "name"
     
+
+
         # If there weas a match, congrats it's a confirmed whed institution
         if inst["match_type"] != None:
             # add appropriate WHED OrgIDs added to matched institutions
             inst["status"] = "confirmed"
         # Otherwise the WHED Org needs to be flagged for verification by Data Officers
-        else:
+        elif inst["match_type"] == "verify":
             inst["status"] = "verify"
 
     return inst
