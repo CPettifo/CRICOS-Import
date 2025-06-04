@@ -1,7 +1,7 @@
 # The goal of this script is to allow for the analysis of structured HEI data to allow for insertion into the 
 # World Higher Education Database, the first iteration uses CRICOS but given time I plan to modify this to take
 # any structured data as input
-#TODO put this into the README too
+#TODO put this into the README too (or instead of)
 # The structured data is outlined in the README but I've put it here for myself also
 
 # there should be three spreadsheets in your workbook
