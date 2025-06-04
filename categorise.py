@@ -10,7 +10,7 @@ import os
 # Before the process begins the latest list of WHED-recognised institutions in Australia is exported with their ID and added as a sheet in the masterlist
 
 # The main method is called by the main.py script
-def main(glossary_path, masterlist_path):
+def main(glossary_path, masterlist_path, postgrad_codes):
     if not os.path.exists(glossary_path):
         print(f"File not found {glossary_path}")
         return
@@ -27,10 +27,7 @@ def main(glossary_path, masterlist_path):
     insts = []
 
 
-    # List of Level Codes that are considered post-grad by the WHED
-    postgrad_codes = ["6C", "7A", "7B", "7C", "7D"]
-
-    # List of credential titles from the spreadsheet (this could later be turned into a query by )
+    # We want the list of postgrad titles (e.g. for CRICOS a Bachelor is 6B, Honours is 6C, etc.)
     print("Checking postgrad degrees")
     postgrad_list = get_postgrad_list(postgrad_codes, whed_levels)
 
@@ -48,17 +45,17 @@ def main(glossary_path, masterlist_path):
     print(f"Masterlist open")
     
     # Open the CRICOS institution sheet
-    cricos_inst = wb['cricos_inst']
+    ext_inst = wb['ext_inst']
     
     # Open the courses sheet
-    cricos_cred = wb['cricos_cred']
+    ext_cred = wb['ext_cred']
 
     # Open the WHED institution sheet
     whed_inst = wb['whed_inst']
 
 
     # For each institution
-    for row in cricos_inst.iter_rows(min_row=2, values_only = True):
+    for row in ext_inst.iter_rows(min_row=2, values_only = True):
         # Offers >= Bachelor Honours, these are WHED candidates (will have to check whether they have a certain number of graduate cohorts)
         
         # insts are by default excluded 
@@ -66,15 +63,15 @@ def main(glossary_path, masterlist_path):
         "whed_id": None,
         "whed_name": None,
         "whed_match_type": None,
-        "cricos_id": str(row[0]),
-        "cricos_name": str(row[2]),
-        "cricos_trading": str(row[1]),
+        "ext_id": str(row[0]),
+        "ext_name": str(row[1]),
+        "ext_trading": str(row[2]),
         "status": "excluded",
         "match_type": None
         }
         
         # and have their status changed to candidate within the candidate_check function
-        inst = candidate_check(inst, postgrad_list, cricos_cred)
+        inst = candidate_check(inst, postgrad_list, ext_cred)
         
 
 
