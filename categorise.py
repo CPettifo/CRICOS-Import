@@ -17,8 +17,9 @@ def main(masterlist_path, postgrad_codes):
         return
 
     # Read masterlist
-    print(f"Opening masterlist: {masterlist_path}, be patient this takes a sec...")
+    print("Opening masterlist be patient this takes a sec...", flush = True)
     wb = load_workbook(masterlist_path)
+    
 
     # open the whed_levels sheet
     whed_levels = wb['whed_levels']
@@ -46,10 +47,9 @@ def main(masterlist_path, postgrad_codes):
 
 
     # For each institution
-    for row in ext_inst.iter_rows(min_row=2, values_only = True):
-        # Offers >= Bachelor Honours, these are WHED candidates (will have to check whether they have a certain number of graduate cohorts)
+    for row_index, row in ext_inst.iter_rows(min_row=2, values_only = True):
         
-        # insts are by default excluded 
+        # insts start excluded 
         inst = {
         "whed_id": None,
         "whed_name": None,
@@ -60,10 +60,13 @@ def main(masterlist_path, postgrad_codes):
         "status": "excluded",
         "match_type": None
         }
+
+        print(f"Processing row {row_index}: {inst['ext_name']}")
         
         # and have their status changed to candidate within the candidate_check function
+        print("Checking WHED candidacy", flush = True)
         inst = candidate_check(inst, postgrad_list, ext_cred)
-        
+        print(f"Candidate status: {inst['status']}\n\n")
         # check whether the institution is in the WHED and update the dict as appropriate
         inst = whed_check(inst, whed_inst)
         
