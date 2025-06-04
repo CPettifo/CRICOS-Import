@@ -89,6 +89,7 @@ def main(glossary_path, masterlist_path):
     whed_excluded = 0
     whed_verify = 0
     whed_confirmed = 0
+    whed_address = 0
 
     print("----------List of excluded institutions----------")
     for inst in insts:
@@ -114,11 +115,14 @@ def main(glossary_path, masterlist_path):
             print(inst)
             whed_verify += 1
 
+    print("----------List of institutions with partial address matches-----")
+
     print("Analysis complete (for details scroll up)")
     print(f"Potential WHED level candidates: {whed_candidates}")
     print(f"Excluded instititions based on degree offerings: {whed_excluded}")
     print(f"Institutions in WHED that are do not offer postgrad according to CRICOS: {whed_verify}")
     print(f"WHED institutions confirmed by CRICOS: {whed_confirmed}")
+    print(f"Institutions with partial (or full) address matches: {whed_address}")
 
 
     # Write output with:
@@ -152,8 +156,9 @@ def whed_check(inst, whed_inst):
         foobar = "z"
         # if webpages match
         if foobar:
+            # Replace http://, https://, www. with "" for both ext and whed
             inst["match_type"] = "web"
-        # if street addresses match
+        # if street addresses match, add it to verify with the match_type: address (it's a fuzzy match so will need to be checked)
         elif foobar:
             inst["match_type"] = "address"
         # if names match
