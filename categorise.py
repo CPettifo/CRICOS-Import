@@ -1,5 +1,7 @@
 from openpyxl import load_workbook #type: ignore
 import os
+import re
+
 
 # CRICOS is an Australian Credential Registry that does not have an API, they do however regularly export from their database and release exports to the public as excel spreadsheets.
 # The World Higher Education Database (WHED) aims to catalogue every higher education institution in the world including institutional and credential information.
@@ -62,7 +64,7 @@ def main(masterlist_path, postgrad_codes):
         }
 
         inst_supp = {
-            "ext_url": str(row[4]),
+            "ext_url": tidy_url(str(row[4])),
             "ext_address": str(row[5])
         }
         print(f"Row {row_index}")
@@ -83,7 +85,6 @@ def main(masterlist_path, postgrad_codes):
     whed_ineligible = 0
     whed_verify = 0
     whed_confirmed = 0
-    whed_address = 0
 
     print("----------List of ineligible institutions----------")
     for inst in insts:
@@ -94,7 +95,7 @@ def main(masterlist_path, postgrad_codes):
     print("----------List of confirmed institutions---------")
     for inst in insts:
         if(inst["whed_status"] == "confirmed"):
-            print(inst["ext_name"])
+            print(f"{inst['whed_name_eng']}, match type: {inst['match_type']}")
             whed_confirmed += 1
 
     print("----------List of Potential WHED Candidates----------")
@@ -109,14 +110,13 @@ def main(masterlist_path, postgrad_codes):
             print(inst["ext_name"])
             whed_verify += 1
 
-    print("----------List of institutions with partial address matches-----")
+
 
     print("Analysis complete (for details scroll up)")
     print(f"Potential WHED level candidates: {whed_candidates}")
     print(f"Ineligible instititions based on degree offerings: {whed_ineligible}")
-    print(f"Institutions in WHED that are do not offer postgrad according to CRICOS: {whed_verify}")
+    print(f"Institutions in WHED that do not offer postgrad according to CRICOS: {whed_verify}")
     print(f"WHED institutions confirmed by CRICOS: {whed_confirmed}")
-    print(f"Institutions with partial (or full) address matches: {whed_address}")
 
     print("Writing to output.xlsx, stand by")
 
@@ -143,43 +143,34 @@ def candidate_check(inst, cred_list, ext_cred):
 # Will try to match institutions in CRICOS to an export from the WHED and will return the instituion name, id, and match type (name, site, address) if it matches
 # Takes the institution dict and the whed_institution sheet as input
 def whed_check(inst, inst_supp, whed_inst):
-    # For clarity and sanity I mapped the dict to a local variable, the same is done for each whed institution below
+    # For clarity and sanity I mapped everything to local variables
     ext_name = inst["ext_name"]
     ext_name_alt = inst["ext_trading"]
     ext_url = inst_supp["ext_url"]
-    ext_address = inst_supp["address"]
-
-
-
-# "whed_id": None,
-#"whed_name": None,
-# "status": "ineligible",
-# "whed_status": None,
-# "match_type": None
+    ext_address = inst_supp["ext_address"]
 
     for row in whed_inst:
         whed_id = str(row[0])
-        whed_name = str(row[2])
-        whed_name_eng = str(row[3])
-        whed_name_alt = str(row[4])
-        whed_url = str(row[5])
+        
+        # Have all whed names be a list that can be iterated to compare to external names
+        whed_names = []
+        
+        whed_names.append (str(row[2]))
+        whed_names.append (str(row[3]))
+        whed_names.append (str(row[4]))
+        whed_url = tidy_url(str(row[5]))
         whed_address = str(row[6])
 
 
-
-
-
-        #Placeholder
         foobar = "z"
-        # if webpages match
-        if foobar == 'w':
-            # Replace http://, https://, www. with "" for both ext and whed and compare
+        # check if webpages match first as it's the most definitive match
+        if ext_url == whed_url:
             inst["match_type"] = "web"
-        # if street addresses match, add it to verify with the match_type: address (it's a fuzzy match so will need to be checked)
+        # TODO: This one is not a priority yet as there should be enough for the Data Officers with name and url matches
         elif foobar == 'w':
             inst["match_type"] = "address"
-        # if names match
-        elif foobar == 'w':
+        # check if the external names match the whed names
+        elif ext_name in whed_names or ext_name_alt in whed_names:
             inst["match_type"] = "name"
     
 
@@ -187,7 +178,7 @@ def whed_check(inst, inst_supp, whed_inst):
         # If there was a match link the whed ID and check whether it should remain a WHED candidate
         if inst["match_type"] != None:
             inst["whed_id"] = whed_id
-            inst["whed_name"] = whed_name
+            inst["whed_name"] = whed_names[1]
             if inst["status"] == "candidate":
                 inst["status"] = "confirmed"
             else:
@@ -207,6 +198,13 @@ def get_postgrad_list(postgrad_codes, whed_levels):
             postgrad_codes.append(cred_name)
     return postgrad_codes
 
+# Will return only the tld of a url
+def tidy_url(url):
+    # Remove protocol and 'www.'
+    url = re.sub(r'^(https?://)?(www\.)?', '', url)
+    # Get only the hostname part (before the first slash)
+    url = url.split('/')[0]
+    return(url)
 
 def write_output(insts):
      
