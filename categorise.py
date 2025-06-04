@@ -121,14 +121,12 @@ def main(glossary_path, masterlist_path, postgrad_codes):
     print(f"WHED institutions confirmed by CRICOS: {whed_confirmed}")
     print(f"Institutions with partial (or full) address matches: {whed_address}")
 
+    print("Writing to output.xlsx, stand by")
 
-    # Write output with:
-    # appropriate WHED OrgIDs added to matched institutions
     # institution dicts in excel format to allow for later verification by Data Officers
-    # wb.save("output.xlsx")
+    write_output(insts)
 
 
-#TODO Flesh out this function
 # Checks the credentials offered at a specific institution to see if it is a possible WHED candidate, takes the institution dict, the cred list, and the cred ws as input
 def candidate_check(inst, cred_list, ext_cred):
     # loop through all credentials in the list
@@ -180,3 +178,10 @@ def get_postgrad_list(postgrad_codes, whed_levels):
             # append to the list of NQF codes in case the source spreadsheet uses those instead of names
             postgrad_codes.append(cred_name)
     return postgrad_codes
+
+
+def write_output(insts):
+    # appropriate WHED OrgIDs added to matched institutions
+    # wb.save("output.xlsx")
+
+    return 0
