@@ -53,11 +53,11 @@ def main(masterlist_path, postgrad_codes):
         inst = {
         "whed_id": None,
         "whed_name": None,
-        "whed_match_type": None,
         "ext_id": str(row[1]),
         "ext_name": str(row[2]),
         "ext_trading": str(row[3]),
         "status": "ineligible",
+        "whed_status": None,
         "match_type": None
         }
 
@@ -93,7 +93,7 @@ def main(masterlist_path, postgrad_codes):
 
     print("----------List of confirmed institutions---------")
     for inst in insts:
-        if(inst["status"] == "confirmed"):
+        if(inst["whed_status"] == "confirmed"):
             print(inst["ext_name"])
             whed_confirmed += 1
 
@@ -143,7 +143,32 @@ def candidate_check(inst, cred_list, ext_cred):
 # Will try to match institutions in CRICOS to an export from the WHED and will return the instituion name, id, and match type (name, site, address) if it matches
 # Takes the institution dict and the whed_institution sheet as input
 def whed_check(inst, inst_supp, whed_inst):
+    # For clarity and sanity I mapped the dict to a local variable, the same is done for each whed institution below
+    ext_name = inst["ext_name"]
+    ext_name_alt = inst["ext_trading"]
+    ext_url = inst_supp["ext_url"]
+    ext_address = inst_supp["address"]
+
+
+
+# "whed_id": None,
+#"whed_name": None,
+# "status": "ineligible",
+# "whed_status": None,
+# "match_type": None
+
     for row in whed_inst:
+        whed_id = str(row[0])
+        whed_name = str(row[2])
+        whed_name_eng = str(row[3])
+        whed_name_alt = str(row[4])
+        whed_url = str(row[5])
+        whed_address = str(row[6])
+
+
+
+
+
         #Placeholder
         foobar = "z"
         # if webpages match
@@ -159,13 +184,15 @@ def whed_check(inst, inst_supp, whed_inst):
     
 
 
-        # If there weas a match, congrats it's a confirmed whed institution
+        # If there was a match link the whed ID and check whether it should remain a WHED candidate
         if inst["match_type"] != None:
-            # add appropriate WHED OrgIDs added to matched institutions
-            inst["status"] = "confirmed"
-        # Otherwise the WHED Org needs to be flagged for verification by Data Officers
-        elif inst["match_type"] == "verify":
-            inst["status"] = "verify"
+            inst["whed_id"] = whed_id
+            inst["whed_name"] = whed_name
+            if inst["status"] == "candidate":
+                inst["status"] = "confirmed"
+            else:
+                inst["status"] = "verify"
+
 
     return inst
 
