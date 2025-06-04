@@ -94,7 +94,7 @@ def main(masterlist_path, postgrad_codes):
 
     print("----------List of confirmed institutions---------")
     for inst in insts:
-        if(inst["whed_status"] == "confirmed"):
+        if(inst["status"] == "confirmed"):
             print(f"{inst['whed_name_eng']}, match type: {inst['match_type']}")
             whed_confirmed += 1
 
@@ -143,6 +143,7 @@ def candidate_check(inst, cred_list, ext_cred):
 # Will try to match institutions in CRICOS to an export from the WHED and will return the instituion name, id, and match type (name, site, address) if it matches
 # Takes the institution dict and the whed_institution sheet as input
 
+## TODO Add partial matches
 def whed_check(inst, inst_supp, whed_inst):
     # For clarity and sanity I mapped everything to local variables
     ext_name = inst["ext_name"]
