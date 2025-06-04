@@ -68,10 +68,11 @@ def main(masterlist_path, postgrad_codes):
             "ext_url": tidy_url(str(row[4])),
             "ext_address": str(row[5])
         }
+
+        inst = candidate_check(inst, postgrad_list, ext_cred)
+
         print(f"Row {row_index}")
         print(inst['ext_name'], flush = True)
-        
-        inst = candidate_check(inst, postgrad_list, ext_cred)
 
         # check whether the institution is in the WHED and update the dict as appropriate
         inst = whed_check(inst, inst_supp, whed_inst)
