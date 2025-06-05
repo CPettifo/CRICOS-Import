@@ -28,5 +28,12 @@ if user_input == "Y":
     # list of level codes that categorise a degree as postgrad in the WHED
     postgrad_codes = ["6C", "7A", "7B", "7C", "7D"]
 
-    # Categorise institutions (WHED-Recognised, WHED-Candidate, etc.)
+    # Categorise institutions (WHED-Recognised, WHED-Candidate, etc.) and export to an excel spreadsheet
     categorise.main(masterlist_path, postgrad_codes)
+
+# user_input = input("do you want to attempt to insert into the whed using masterlist credentials?")
+if user_input == "Y":
+    # insert.main(masterlist_path)
+    
+    
+    exit(0)
