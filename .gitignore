@@ -2,6 +2,7 @@
 
 masterlist.xlsx
 glossary.xlsx
+output.xlsx
 
 __pycache__/
 *.py[cod]
