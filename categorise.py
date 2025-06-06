@@ -1,4 +1,4 @@
-from openpyxl import load_workbook #type: ignore
+from openpyxl import load_workbook, Workbook #type: ignore
 import os
 import re
 
@@ -80,7 +80,6 @@ def main(masterlist_path, postgrad_codes):
         print(f"Candidate status: {inst['status']}\n\n")
 
         insts.append(inst)
-
 
 
     whed_candidates = 0
@@ -216,10 +215,23 @@ def tidy_url(url):
     url = url.split('/')[0]
     return(url)
 
+
+# Write the Dicts to a spreadsheet
 def write_output(insts):
-     
     
     
-    # wb.save("output.xlsx")
+    output = Workbook()
+    ws = output.active
+    
+    # Get unique keys and add them as the column headers
+    columns = list({key for row in insts for key in row.keys()})
+
+    ws.append(columns)
+
+    for row in insts:
+        ws.append([row.get(key, "") for key in columns])
+    
+    
+    output.save("output.xlsx")
 
     return 0
