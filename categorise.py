@@ -87,6 +87,9 @@ def main(masterlist_path, postgrad_codes):
     whed_verify = 0
     whed_confirmed = 0
 
+    # TODO: Add logic to loop through WHED institutions that aren't matched
+    # TODO: Move most of the above logic (categorisation / looping through external institutions) to functions
+
     print("----------List of ineligible institutions----------")
     for inst in insts:
         if(inst["status"] == "ineligible"):
