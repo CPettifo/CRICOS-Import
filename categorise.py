@@ -41,8 +41,9 @@ def main(masterlist_path, postgrad_codes):
     insts = []
 
 
-    # We want the list of postgrad titles (e.g. for CRICOS a Bachelor is 6B, Honours is 6C, etc.)
+
     print("Checking postgrad degrees")
+    # Get the list of Postgrad Degrees
     postgrad_list = get_postgrad_list(postgrad_codes, whed_levels)
 
     print(f"List of postgrad credentials offered in this country:\n{postgrad_list}")  
@@ -61,12 +62,9 @@ def main(masterlist_path, postgrad_codes):
         "ext_trading": str(row[3]).lower(),
         "status": "ineligible",
         "whed_status": None,
-        "match_type": None
-        }
-
-        inst_supp = {
-            "ext_url": tidy_url(str(row[4])),
-            "ext_address": str(row[5])
+        "match_type": None,
+        "ext_url": tidy_url(str(row[4])),
+        "ext_address": str(row[5])
         }
 
         inst = candidate_check(inst, postgrad_list, ext_cred)
@@ -75,7 +73,7 @@ def main(masterlist_path, postgrad_codes):
         print(inst['ext_name'], flush = True)
 
         # check whether the institution is in the WHED and update the dict as appropriate
-        inst = whed_check(inst, inst_supp, whed_inst)
+        inst = whed_check(inst, whed_inst)
         
         print(f"Candidate status: {inst['status']}\n\n")
 
@@ -147,13 +145,13 @@ def candidate_check(inst, cred_list, ext_cred):
 # Will try to match institutions in CRICOS to an export from the WHED and will return the instituion name, id, and match type (name, site, address) if it matches
 # Takes the institution dict and the whed_institution sheet as input
 
-## TODO Add partial matches
-def whed_check(inst, inst_supp, whed_inst):
+## TODO Add partial matches for names and addresses
+def whed_check(inst, whed_inst):
     # For clarity and sanity I mapped everything to local variables
     ext_name = inst["ext_name"]
     ext_name_alt = inst["ext_trading"]
-    ext_url = inst_supp["ext_url"]
-    ext_address = inst_supp["ext_address"]
+    ext_url = inst["ext_url"]
+    ext_address = inst["ext_address"]
 
     for row in whed_inst.iter_rows(min_row=2, values_only = True):
         whed_id = str(row[0])
