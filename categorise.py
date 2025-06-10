@@ -129,10 +129,7 @@ def process_input(ext_inst, postgrad_list, ext_cred)
 
         insts.append(inst)
 
-
-    # TODO: Move most of the above logic (categorisation / looping through external institutions) to functions
-
-
+    return insts
 
 # Checks the credentials offered at a specific institution to see if it is a possible WHED candidate, takes the institution dict, the cred list, and the cred ws as input
 def candidate_check(inst, cred_list, ext_cred):
