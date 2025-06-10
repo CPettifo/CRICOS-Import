@@ -48,36 +48,8 @@ def main(masterlist_path, postgrad_codes):
 
     print(f"List of postgrad credentials offered in this country:\n{postgrad_list}")  
 
-
-    # For each institution
-    for row in ext_inst.iter_rows(min_row=2, values_only = True):
-        row_index = row[0]
-        # insts are by default ineligible 
-        inst = {
-        "whed_id": None,
-        "whed_name": None,
-        "whed_name_eng": None,
-        "ext_id": str(row[1]),
-        "ext_name": str(row[2]).lower(),
-        "ext_trading": str(row[3]).lower(),
-        "status": "ineligible",
-        "whed_status": None,
-        "match_type": None,
-        "ext_url": tidy_url(str(row[4])),
-        "ext_address": str(row[5])
-        }
-
-        inst = candidate_check(inst, postgrad_list, ext_cred)
-
-        print(f"Row {row_index}")
-        print(inst['ext_name'], flush = True)
-
-        # check whether the institution is in the WHED and update the dict as appropriate
-        inst = whed_check(inst, whed_inst)
-        
-        print(f"Candidate status: {inst['status']}\n\n")
-
-        insts.append(inst)
+    # Analyse external institutions to find WHED candidates
+    insts = process_input(ext_int, postgrad_list, ext_cred)
 
 
     whed_candidates = 0
@@ -124,6 +96,42 @@ def main(masterlist_path, postgrad_codes):
 
     # write institutions to excel format to allow for later verification by Data Officers
     write_output(insts)
+
+
+def process_input(ext_inst, postgrad_list, ext_cred)
+
+    # For each institution
+    for row in ext_inst.iter_rows(min_row=2, values_only = True):
+        row_index = row[0]
+        # insts are by default ineligible 
+        inst = {
+        "whed_id": None,
+        "whed_name": None,
+        "whed_name_eng": None,
+        "ext_id": str(row[1]),
+        "ext_name": str(row[2]).lower(),
+        "ext_trading": str(row[3]).lower(),
+        "status": "ineligible",
+        "whed_status": None,
+        "match_type": None,
+        "ext_url": tidy_url(str(row[4])),
+        "ext_address": str(row[5])
+        }
+
+        inst = candidate_check(inst, postgrad_list, ext_cred)
+
+        print(f"Row {row_index}")
+        print(inst['ext_name'], flush = True)
+
+        # check whether the institution is in the WHED and update the dict as appropriate
+        inst = whed_check(inst, whed_inst)
+        
+        print(f"Candidate status: {inst['status']}\n\n")
+
+        insts.append(inst)
+
+
+
 
 
 # Checks the credentials offered at a specific institution to see if it is a possible WHED candidate, takes the institution dict, the cred list, and the cred ws as input
