@@ -13,6 +13,8 @@
 # It should have the following columns in this order: institution ID, institution name, whether credential is not expired (manually set this to "No" if it is not present in extraction)
 # Credential level (i.e. Bachelors, Masters, or NQF level), Course Name, Course Code, FOS Levels if available and in descending order of hierarchy
 
+# I'm not planning for this to be particularly well optimised, as it is a script that will only be run periodically, and likely on local systems in the background.
+
 import categorise # type: ignore
 
 masterlist_path = "masterlist.xlsx"
