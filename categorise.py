@@ -26,22 +26,6 @@ def main(masterlist_path, postgrad_codes):
     # open the whed_levels sheet
     whed_levels = wb['whed_levels']
 
-    # Open the CRICOS institution sheet
-    ext_inst = wb['ext_inst']
-    
-    # Open the courses sheet
-    ext_cred = wb['ext_cred']
-
-    # Open the WHED institution sheet
-    whed_inst = wb['whed_inst']
-
-
-    ###Initialise Lists & Dicts###
-
-    insts = []
-
-
-
     print("Checking postgrad degrees")
     # Get the list of Postgrad Degrees
     postgrad_list = get_postgrad_list(postgrad_codes, whed_levels)
@@ -49,7 +33,7 @@ def main(masterlist_path, postgrad_codes):
     print(f"List of postgrad credentials offered in this country:\n{postgrad_list}")  
 
     # Categorise external institutions
-    insts = process_input(ext_inst, postgrad_list, ext_cred, whed_inst)
+    insts = process_input(wb, postgrad_list)
 
     print_summary(insts)
 
@@ -59,7 +43,21 @@ def main(masterlist_path, postgrad_codes):
     write_output(insts)
 
 
-def process_input(ext_inst, postgrad_list, ext_cred, whed_inst):
+
+# Assess external institutions for WHED eligibility, categorise all institutions in external Dataset
+# Takes the list of postgrad degrees and the workbook as arguments
+def process_input(wb, postgrad_list):
+    insts = []
+
+    # Open the CRICOS institution sheet
+    ext_inst = wb['ext_inst']
+    
+    # Open the courses sheet
+    ext_cred = wb['ext_cred']
+
+    # Open the WHED institution sheet
+    whed_inst = wb['whed_inst']
+
 
     # For each institution
     for row in ext_inst.iter_rows(min_row=2, values_only = True):
@@ -86,10 +84,14 @@ def process_input(ext_inst, postgrad_list, ext_cred, whed_inst):
 
         # check whether the institution is in the WHED and update the dict as appropriate
         inst = whed_check(inst, whed_inst)
+
         
         print(f"Candidate status: {inst['status']}\n\n")
 
         insts.append(inst)
+
+    #TODO Rename this function to something
+    verify_whed_insts()
 
     return insts
 
@@ -112,7 +114,7 @@ def candidate_check(inst, cred_list, ext_cred):
 # Will try to match institutions in CRICOS to an export from the WHED and will return the instituion name, id, and match type (name, site, address) if it matches
 # Takes the institution dict and the whed_institution sheet as input
 
-## TODO Add partial matches for names and addresses
+
 def whed_check(inst, whed_inst):
     # For clarity and sanity I mapped everything to local variables
     ext_name = inst["ext_name"]
@@ -120,7 +122,6 @@ def whed_check(inst, whed_inst):
     ext_url = inst["ext_url"]
     ext_address = inst["ext_address"]
 
-    # TODO: Add logic to add WHED institutions that aren't matched
     for row in whed_inst.iter_rows(min_row=2, values_only = True):
         whed_id = str(row[0])
         
@@ -149,10 +150,8 @@ def whed_check(inst, whed_inst):
         elif ext_name in whed_names or ext_name_alt in whed_names:
             inst["match_type"] = "name"
             break
+        # TODO Add comparison for partial matches
     
-
-
-
     # If there was a match link the whed ID and check whether it should remain a WHED candidate
     if inst["match_type"] != None:
         inst["whed_id"] = whed_id
@@ -162,19 +161,12 @@ def whed_check(inst, whed_inst):
         else:
             inst["status"] = "verify"
 
-
     return inst
 
-# Takes the list of postgrad codes and the whed_levels sheet as input and returns a list of course names at post-grad level
-def get_postgrad_list(postgrad_codes, whed_levels):
-    # for row of credential name
-    for row in whed_levels.iter_rows(min_row=2, values_only = True):
-        cred_name = str(row[0])
-        level_code= str(row[1])
-        if level_code in postgrad_codes:
-            # append to the list of NQF codes in case the source spreadsheet uses those instead of names
-            postgrad_codes.append(cred_name)
-    return postgrad_codes
+# Will loop through all WHED institutions and list any that were not matched, adding them to the insts dict.
+# TODO Flesh out function
+def verify_whed_insts():
+    return 0
 
 # Will return only the tld of a url
 def tidy_url(url):
@@ -189,8 +181,6 @@ def print_summary(insts):
     whed_ineligible = 0
     whed_verify = 0
     whed_confirmed = 0
-
-
 
     print("----------List of ineligible institutions----------")
     for inst in insts:
@@ -215,8 +205,6 @@ def print_summary(insts):
         if(inst["status"] == "verify"):
             print(inst["ext_name"])
             whed_verify += 1
-
-
 
     print("Analysis complete (for details scroll up)")
     print(f"Potential WHED level candidates: {whed_candidates}")
