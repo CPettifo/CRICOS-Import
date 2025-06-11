@@ -97,7 +97,7 @@ def main(masterlist_path, postgrad_codes):
     write_output(insts)
 
 
-def process_input(ext_inst, postgrad_list, ext_cred)
+def process_input(ext_inst, postgrad_list, ext_cred):
 
     # For each institution
     for row in ext_inst.iter_rows(min_row=2, values_only = True):
