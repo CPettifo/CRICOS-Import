@@ -42,7 +42,23 @@ def main(masterlist_path, postgrad_codes):
     # write institutions to excel format to allow for later verification by Data Officers
     write_output(insts)
 
+def get_postgrad_list(postgrad_codes, whed_levels):
 
+    # for row of credential name
+
+    for row in whed_levels.iter_rows(min_row=2, values_only = True):
+
+        cred_name = str(row[0])
+
+        level_code= str(row[1])
+
+        if level_code in postgrad_codes:
+
+            # append to the list of NQF codes in case the source spreadsheet uses those instead of names
+
+            postgrad_codes.append(cred_name)
+
+    return postgrad_codes
 
 # Assess external institutions for WHED eligibility, categorise all institutions in external Dataset
 # Takes the list of postgrad degrees and the workbook as arguments
@@ -113,8 +129,6 @@ def candidate_check(inst, cred_list, ext_cred):
 
 # Will try to match institutions in CRICOS to an export from the WHED and will return the instituion name, id, and match type (name, site, address) if it matches
 # Takes the institution dict and the whed_institution sheet as input
-
-
 def whed_check(inst, whed_inst):
     # For clarity and sanity I mapped everything to local variables
     ext_name = inst["ext_name"]
