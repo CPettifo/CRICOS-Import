@@ -48,56 +48,18 @@ def main(masterlist_path, postgrad_codes):
 
     print(f"List of postgrad credentials offered in this country:\n{postgrad_list}")  
 
-    # Analyse external institutions to find WHED candidates
-    insts = process_input(ext_int, postgrad_list, ext_cred)
+    # Categorise external institutions
+    insts = process_input(ext_inst, postgrad_list, ext_cred, whed_inst)
+
+    print_summary(insts)
 
 
-    whed_candidates = 0
-    whed_ineligible = 0
-    whed_verify = 0
-    whed_confirmed = 0
-
-
-
-    print("----------List of ineligible institutions----------")
-    for inst in insts:
-        if(inst["status"] == "ineligible"):
-            print(inst["ext_name"])
-            whed_ineligible += 1
-
-    print("----------List of confirmed institutions---------")
-    for inst in insts:
-        if(inst["status"] == "confirmed"):
-            print(f"{inst['whed_name_eng']}, match type: {inst['match_type']}")
-            whed_confirmed += 1
-
-    print("----------List of Potential WHED Candidates----------")
-    for inst in insts:
-        if(inst["status"] == "candidate"):
-            print(inst["ext_name"])
-            whed_candidates += 1
-
-    print("----------List of institutions to check validity-----")
-    for inst in insts:
-        if(inst["status"] == "verify"):
-            print(inst["ext_name"])
-            whed_verify += 1
-
-
-
-    print("Analysis complete (for details scroll up)")
-    print(f"Potential WHED level candidates: {whed_candidates}")
-    print(f"Ineligible instititions based on degree offerings: {whed_ineligible}")
-    print(f"Institutions in WHED that do not offer postgrad according to CRICOS: {whed_verify}")
-    print(f"WHED institutions confirmed by CRICOS: {whed_confirmed}")
-
-    print("Writing to output.xlsx, stand by")
 
     # write institutions to excel format to allow for later verification by Data Officers
     write_output(insts)
 
 
-def process_input(ext_inst, postgrad_list, ext_cred):
+def process_input(ext_inst, postgrad_list, ext_cred, whed_inst):
 
     # For each institution
     for row in ext_inst.iter_rows(min_row=2, values_only = True):
@@ -221,6 +183,48 @@ def tidy_url(url):
     # Get only the hostname part (before the first slash)
     url = url.split('/')[0]
     return(url)
+
+def print_summary(insts):
+    whed_candidates = 0
+    whed_ineligible = 0
+    whed_verify = 0
+    whed_confirmed = 0
+
+
+
+    print("----------List of ineligible institutions----------")
+    for inst in insts:
+        if(inst["status"] == "ineligible"):
+            print(inst["ext_name"])
+            whed_ineligible += 1
+
+    print("----------List of confirmed institutions---------")
+    for inst in insts:
+        if(inst["status"] == "confirmed"):
+            print(f"{inst['whed_name_eng']}, match type: {inst['match_type']}")
+            whed_confirmed += 1
+
+    print("----------List of Potential WHED Candidates----------")
+    for inst in insts:
+        if(inst["status"] == "candidate"):
+            print(inst["ext_name"])
+            whed_candidates += 1
+
+    print("----------List of institutions to check validity-----")
+    for inst in insts:
+        if(inst["status"] == "verify"):
+            print(inst["ext_name"])
+            whed_verify += 1
+
+
+
+    print("Analysis complete (for details scroll up)")
+    print(f"Potential WHED level candidates: {whed_candidates}")
+    print(f"Ineligible instititions based on degree offerings: {whed_ineligible}")
+    print(f"Institutions in WHED that do not offer postgrad according to CRICOS: {whed_verify}")
+    print(f"WHED institutions confirmed by CRICOS: {whed_confirmed}")
+
+    print("Writing to output.xlsx, stand by")
 
 
 # Write the Dicts to a spreadsheet
