@@ -22,9 +22,8 @@ masterlist_path = "masterlist.xlsx"
 output_path = "output.xlsx"
 
 # Ask for user input if categorisation is required
-# user_input = input("categorise institutions? [Y/ N]: ")
+user_input = input("categorise institutions? [Y/ N]: ")
 
-user_input = "Y"
 
 if user_input == "Y":
     
@@ -32,9 +31,9 @@ if user_input == "Y":
     postgrad_codes = ["6C", "7A", "7B", "7C", "7D"]
 
     # Categorise institutions (WHED-Recognised, WHED-Candidate, etc.) and export to an excel spreadsheet
-    insts = categorise.main(masterlist_path, postgrad_codes)
+    categorise.main(masterlist_path, postgrad_codes)
 
-# user_input = input("do you want to attempt to insert into the whed using masterlist credentials?")
+user_input = input("do you want to attempt to insert into the whed using masterlist credentials?")
 if user_input == "Y":
     creds.main(masterlist_path, output_path, insts)    
     exit(0)

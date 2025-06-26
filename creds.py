@@ -3,13 +3,12 @@ import mysql.connector, os, tempfile
 from openpyxl import load_workbook, Workbook
 
 def main():
-
-    # Get list of WHED confirmed institutions from categorise list or spreadsheet
-    
-
     # Get list of FOS Codes and FOS Levels / Display Categories from WHED (or spreadsheet)
     # Open connection to the WHED
     conn = whed_connect()
+    cursor = conn.cursor(dictionary=True)
+    # get test data
+    cursor.execute("SELECT GlobalID, OrgName FROM whed_org LIMIT 20;")
 
 
 
