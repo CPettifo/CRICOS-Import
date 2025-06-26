@@ -15,7 +15,7 @@
 
 # I'm not planning for this to be particularly well optimised, as it is a script that will only be run periodically, and likely on local systems in the background.
 
-import categorise, creds #type ignore
+import categorise, creds
 
 
 masterlist_path = "masterlist.xlsx"
@@ -35,5 +35,5 @@ if user_input == "Y":
 
 user_input = input("do you want to attempt to insert into the whed using masterlist credentials?")
 if user_input == "Y":
-    creds.main(masterlist_path, output_path, insts)    
+    creds.main(masterlist_path, output_path)    
     exit(0)

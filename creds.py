@@ -2,7 +2,10 @@
 import mysql.connector, os, tempfile
 from openpyxl import load_workbook, Workbook
 
-def main():
+def main(masterlist_path, output_path):
+    # Create a new dict of institutions
+    insts = get_insts(output_path)
+
     # Get list of FOS Codes and FOS Levels / Display Categories from WHED (or spreadsheet)
     # Open connection to the WHED
     conn = whed_connect()
@@ -48,3 +51,34 @@ def whed_connect():
         port=int(os.getenv("DB_PORT", 3306))
     )
     return conn
+
+def get_insts(output_path):
+    insts = 0
+    # open output file
+    if not os.path.exists(output_path):
+        print(f"Output not found, did you run the categorisation on the masterlist? path: {output_path}")
+        exit()
+
+    # Read output
+    print("Opening output", flush = True)
+    wb = load_workbook(output_path)
+    
+    # Open output sheet
+    ws = wb['Sheet']
+
+    # Loop through rows
+    for row in ws.iter_rows(min_row=2, values_only = True):
+        # create new inst using row info
+        inst = {
+            "whed_id": row[3],
+            "whed_name": str(row[8]),
+            "whed_name_eng": str(row[6]),
+            "ext_id": str(row[1]),
+            "ext_name": str(row[2])(),
+            "ext_trading": str(row[0])(),
+            "status": str(row[5]),
+            "match_type": str(row[7])
+            }
+        
+
+    return insts
