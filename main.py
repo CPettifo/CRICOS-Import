@@ -15,7 +15,8 @@
 
 # I'm not planning for this to be particularly well optimised, as it is a script that will only be run periodically, and likely on local systems in the background.
 
-import categorise # type: ignore
+import categorise, creds #type ignore
+
 
 masterlist_path = "masterlist.xlsx"
 
