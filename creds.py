@@ -29,5 +29,21 @@ from openpyxl import load_workbook, Workbook
 
 # will return the conn for the database connection
 def whed_connect():
+    certificate = os.environ.get("DB_CERT")
+    if not certificate:
+        raise ValueError("No DB_CERT value found")
     
+    # create the ssl file from the ssl contents stored in env variabls
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pem") as ssl_file:
+        ssl_file.write(certificate.encode("utf-8"))
+        ssl_file_path = ssl_file.name
+
+    # connect to the remote db using env variables and the cert file created above
+    conn = mysql.connector.connect(
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),database=os.getenv("DB_NAME"),
+        ssl_ca=ssl_file_path,
+        port=int(os.getenv("DB_PORT", 3306))
+    )
     return conn
