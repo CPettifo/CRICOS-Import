@@ -1,5 +1,6 @@
 # This file will process the standardised credential data and convert it into the appropriate WHED Codes
-import mysql.connector, os, tempfile
+import mysql.connector
+import os, tempfile
 from openpyxl import load_workbook, Workbook
 
 def main(masterlist_path, output_path):
@@ -10,15 +11,48 @@ def main(masterlist_path, output_path):
     # Open connection to the WHED
     conn = whed_connect()
     cursor = conn.cursor(dictionary=True)
-    # get test data
+    # test connection
     cursor.execute("SELECT GlobalID, OrgName FROM whed_org LIMIT 20;")
 
+    # Open masterlist
+    if not os.path.exists(masterlist_path):
+        print(f"Masterlist not found at {masterlist_path}")
+        return
+    
+    #Read list
+    print("Opening masterlist be patient...", flush = True)
+    wb = load_workbook(masterlist_path)
+
+    # Open whed_levels sheet
+    whed_levels = wb['whed_levels']
+
+    # open courses sheet
+    ext_cred = wb['ext_cred']
 
 
-    # For each institutions 
-        # For each credential
-            # If credential's institution matches the one in the loop
-                # Match credentials to the appropriate WHED CredCode (e.g. Australian Bachelor has CredCode of ####)
+    # initialise credentials dict
+    creds = {}
+
+
+
+    for inst in insts:
+        # skip institition if it hasn't been categorised as "confirmed"
+        if inst.status != "confirmed":
+            continue
+        # For each credential in sheet
+        for row in ext_cred.iter_rows(min_row=2, values_only = True):
+
+            # If credential's institution matches the one in the loop & is not expired
+            expired = str(row[2])
+            if expired == "No" and inst.ext_id == str(row[0]):
+                
+                cred={
+                    "whed_id": inst.whed_id,
+                    "cred_code": get_cred_code(row, whed_levels),
+                    "fos_code": get_fos_code,
+                    "cred_name": str(row[4])
+                }
+                # #TODO implement levels Match credentials to the appropriate WHED CredCode (e.g. Australian Bachelor has CredCode of ####)
 
                 # Match Field to appropriate whed FOS using the following hierarchy
                     # If any of the FOS fields match, use that
@@ -29,7 +63,9 @@ def main(masterlist_path, output_path):
                         # Add the cred to the "to be sorted" category, and add to a bucket
                         # By bucket I mean basically to have all unsorted categories matched together, so there could potentially be 100 instances of a
                         # non-matched field (e.g. Mobile Programming) that could then be categorised by a Data Officer at the end of the program
-
+    
+    # Delete system 32 (kidding)
+    exit
 
 # will return the conn for the database connection
 def whed_connect():
@@ -51,6 +87,13 @@ def whed_connect():
         port=int(os.getenv("DB_PORT", 3306))
     )
     return conn
+
+# takes the current row of the credentials table and the whed_levels sheet to try to return the credential code
+def get_cred_code(row, whed_levels):
+    return "1A"
+
+def get_fos_code(row):
+    return "1111"
 
 def get_insts(output_path):
     insts = 0
@@ -79,6 +122,6 @@ def get_insts(output_path):
             "status": str(row[5]),
             "match_type": str(row[7])
             }
-        
+        insts.append(inst)
 
     return insts
