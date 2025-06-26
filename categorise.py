@@ -42,6 +42,9 @@ def main(masterlist_path, postgrad_codes):
     # write institutions to excel format to allow for later verification by Data Officers
     write_output(insts)
 
+    # return insts to main app
+    return insts
+
 def get_postgrad_list(postgrad_codes, whed_levels):
 
     # for row of credential name
