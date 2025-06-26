@@ -80,19 +80,7 @@ def process_input(wb, postgrad_list):
     for row in ext_inst.iter_rows(min_row=2, values_only = True):
         row_index = row[0]
         # insts are by default ineligible 
-        inst = {
-        "whed_id": None,
-        "whed_name": None,
-        "whed_name_eng": None,
-        "ext_id": str(row[1]),
-        "ext_name": str(row[2]).lower(),
-        "ext_trading": str(row[3]).lower(),
-        "status": "ineligible",
-        "whed_status": None,
-        "match_type": None,
-        "ext_url": tidy_url(str(row[4])),
-        "ext_address": str(row[5])
-        }
+        inst = create_inst(row)
 
         inst = candidate_check(inst, postgrad_list, ext_cred)
 
@@ -111,6 +99,23 @@ def process_input(wb, postgrad_list):
     verify_whed_insts()
 
     return insts
+
+def create_inst(row):
+    inst = {
+        "whed_id": None,
+        "whed_name": None,
+        "whed_name_eng": None,
+        "ext_id": str(row[1]),
+        "ext_name": str(row[2]).lower(),
+        "ext_trading": str(row[3]).lower(),
+        "status": "ineligible",
+        "whed_status": None,
+        "match_type": None,
+        "ext_url": tidy_url(str(row[4])),
+        "ext_address": str(row[5])
+        }
+
+    return inst
 
 # Checks the credentials offered at a specific institution to see if it is a possible WHED candidate, takes the institution dict, the cred list, and the cred ws as input
 def candidate_check(inst, cred_list, ext_cred):
