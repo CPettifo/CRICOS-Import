@@ -1,4 +1,4 @@
-from openpyxl import load_workbook, Workbook #type: ignore
+from openpyxl import load_workbook, Workbook
 import os
 import re
 

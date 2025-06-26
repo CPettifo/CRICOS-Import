@@ -1,6 +1,6 @@
 # This file will process the standardised credential data and convert it into the appropriate WHED Codes
-
-
+import mysql.connector, os, tempfile
+from openpyxl import load_workbook, Workbook
 
 
 # Get list of WHED confirmed institutions from categorise list or spreadsheet
