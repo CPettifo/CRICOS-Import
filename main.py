@@ -19,7 +19,7 @@ import categorise, creds #type ignore
 
 
 masterlist_path = "masterlist.xlsx"
-
+output_path = "output.xlsx"
 
 # Ask for user input if categorisation is required
 # user_input = input("categorise institutions? [Y/ N]: ")
@@ -36,7 +36,5 @@ if user_input == "Y":
 
 # user_input = input("do you want to attempt to insert into the whed using masterlist credentials?")
 if user_input == "Y":
-    # insert.main(masterlist_path)
-    
-    
+    creds.main(masterlist_path, output_path)    
     exit(0)

@@ -7,6 +7,8 @@ from openpyxl import load_workbook, Workbook
 
 
 # Get list of FOS Codes and FOS Levels / Display Categories from WHED (or spreadsheet)
+# Open connection to the WHED
+
 
 
 # For each institutions 
@@ -23,4 +25,9 @@ from openpyxl import load_workbook, Workbook
                     # Add the cred to the "to be sorted" category, and add to a bucket
                     # By bucket I mean basically to have all unsorted categories matched together, so there could potentially be 100 instances of a
                     # non-matched field (e.g. Mobile Programming) that could then be categorised by a Data Officer at the end of the program
+
+
+# will return the conn for the database connection
+def whed_connect():
     
+    return conn
