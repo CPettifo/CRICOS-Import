@@ -1,5 +1,7 @@
 # This file will process the standardised credential data and convert it into the appropriate WHED Codes
 import mysql.connector
+import pymysql, cryptography
+from dotenv import load_dotenv
 import os, tempfile
 from openpyxl import load_workbook, Workbook
 
@@ -67,8 +69,35 @@ def main(masterlist_path, output_path):
     # Delete system 32 (kidding)
     exit
 
+def whed_test_connect():
+    load_dotenv()
+    timeout = 10
+    connection = pymysql.connect(
+        charset="utf8mb4",
+        connect_timeout=timeout,
+        cursorclass=pymysql.cursors.DictCursor,
+        db=os.getenv("DB_NAME"),
+        host=os.getenv("DB_HOST"),
+        password=os.getenv("DB_PASSWORD"),
+        read_timeout=timeout,
+        port=int(os.getenv("DB_PORT", 3306)),
+        user=os.getenv("DB_USER"),
+        write_timeout=timeout,
+        
+    )
+    try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT OrgID FROM whed_org WHERE OrgID < 25 LIMIT 1")
+        print(cursor.fetchall())
+    finally:
+        connection.close()
+        print("successful connection")
+
 # will return the conn for the database connection
 def whed_connect():
+    ssl_file_path = ""
+    
+    '''
     certificate = os.environ.get("DB_CERT")
     if not certificate:
         raise ValueError("No DB_CERT value found")
@@ -77,13 +106,13 @@ def whed_connect():
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pem") as ssl_file:
         ssl_file.write(certificate.encode("utf-8"))
         ssl_file_path = ssl_file.name
-
+    '''
     # connect to the remote db using env variables and the cert file created above
     conn = mysql.connector.connect(
         host=os.getenv("DB_HOST"),
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),database=os.getenv("DB_NAME"),
-        ssl_ca=ssl_file_path,
+        #ssl_ca=ssl_file_path,
         port=int(os.getenv("DB_PORT", 3306))
     )
     return conn
