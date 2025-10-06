@@ -69,7 +69,7 @@ def main(masterlist_path, output_path):
     # Delete system 32 (kidding)
     exit
 
-def whed_test_connect():
+def whed_test_connect(query):
     load_dotenv()
     timeout = 10
     connection = pymysql.connect(
@@ -83,39 +83,31 @@ def whed_test_connect():
         port=int(os.getenv("DB_PORT", 3306)),
         user=os.getenv("DB_USER"),
         write_timeout=timeout,
-        
     )
     try:
         cursor = connection.cursor()
-        cursor.execute("SELECT OrgID FROM whed_org WHERE OrgID < 25 LIMIT 1")
+        cursor.execute(query)
         print(cursor.fetchall())
     finally:
         connection.close()
-        print("successful connection")
 
 # will return the conn for the database connection
 def whed_connect():
-    ssl_file_path = ""
-    
-    '''
-    certificate = os.environ.get("DB_CERT")
-    if not certificate:
-        raise ValueError("No DB_CERT value found")
-    
-    # create the ssl file from the ssl contents stored in env variabls
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pem") as ssl_file:
-        ssl_file.write(certificate.encode("utf-8"))
-        ssl_file_path = ssl_file.name
-    '''
-    # connect to the remote db using env variables and the cert file created above
-    conn = mysql.connector.connect(
+    load_dotenv()
+    timeout = 10
+    connection = pymysql.connect(
+        charset="utf8mb4",
+        connect_timeout=timeout,
+        cursorclass=pymysql.cursors.DictCursor,
+        db=os.getenv("DB_NAME"),
         host=os.getenv("DB_HOST"),
+        password=os.getenv("DB_PASSWORD"),
+        read_timeout=timeout,
+        port=int(os.getenv("DB_PORT", 3306)),
         user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),database=os.getenv("DB_NAME"),
-        #ssl_ca=ssl_file_path,
-        port=int(os.getenv("DB_PORT", 3306))
+        write_timeout=timeout,
     )
-    return conn
+    return connection
 
 # takes the current row of the credentials table and the whed_levels sheet to try to return the credential code
 def get_cred_code(row, whed_levels):

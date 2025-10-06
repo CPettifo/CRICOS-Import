@@ -22,9 +22,11 @@ masterlist_path = "masterlist.xlsx"
 output_path = "output.xlsx"
 
 # Test db connection
-print("testing whed connection")
-creds.whed_test_connect()
-print("connection successful")
+print("Testing Connection to WHED")
+# create test query
+query = "SELECT OrgID AS 'Connection Test' FROM whed_org WHERE OrgID < 25 LIMIT 5"
+creds.whed_test_connect(query)
+print("WHED Connection Successful")
 
 # Ask for user input if categorisation is required
 user_input = input("categorise institutions? [Y/ N]: ")
@@ -38,7 +40,7 @@ if user_input == "Y":
     # Categorise institutions (WHED-Recognised, WHED-Candidate, etc.) and export to an excel spreadsheet
     categorise.main(masterlist_path, postgrad_codes)
 
-user_input = input("do you want to attempt to insert into the whed using masterlist credentials? [Y/ N]")
+user_input = input("do you want to attempt to insert into the whed using masterlist credentials? [Y/ N]: ")
 if user_input == "Y":
     creds.main(masterlist_path, output_path)    
     exit(0)
