@@ -22,7 +22,9 @@ masterlist_path = "masterlist.xlsx"
 output_path = "output.xlsx"
 
 # Test db connection
+print("testing whed connection")
 creds.whed_test_connect()
+print("connection successful")
 
 # Ask for user input if categorisation is required
 user_input = input("categorise institutions? [Y/ N]: ")
