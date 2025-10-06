@@ -2,4 +2,4 @@ mysql-connector-python
 openpyxl
 pymysql
 cryptography
-dotenv
+dotenv --user
