@@ -1,5 +1,5 @@
 mysql-connector-python
-openpyxl
+openpyxl --user
 pymysql
 cryptography
 dotenv --user

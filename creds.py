@@ -1,5 +1,5 @@
 # This file will process the standardised credential data and convert it into the appropriate WHED Codes
-import mysql.connector
+
 import pymysql, cryptography
 from dotenv import load_dotenv
 import os, tempfile
