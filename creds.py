@@ -48,9 +48,12 @@ def main(masterlist_path, output_path):
             expired = str(row[2])
             if expired == "No" and inst.ext_id == str(row[0]):
                 
+                # Assign the credential to a variabls
                 cred={
                     "whed_id": inst.whed_id,
+                    # Get the code for the credential (e.g. bachelor, masters)
                     "cred_code": get_cred_code(row, whed_levels),
+                    # Get the code for the field of study (e.g. CompSci, History)
                     "fos_code": get_fos_code,
                     "cred_name": str(row[4])
                 }
