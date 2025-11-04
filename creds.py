@@ -143,7 +143,7 @@ def get_cred_code(row, whed_creds):
     return "1138"
 
 def get_fos_code(row, temp_degree):
-    print("FOS Code Row: ", row)
+    #print("FOS Code Row: ", row)
     return "1111"
 
 def get_insts(output_path):
@@ -186,8 +186,12 @@ def get_creds(whed_levels, cursor):
         country_code = str(row[2])
 
         # get country ID
-        country_id = cursor.execute(f"SELECT StateID FROM whed_state WHERE CountryCode = '{country_code}'")
+        cursor.execute(f"SELECT StateID, COUNTRY FROM whed_state WHERE CountryCode = %s", (country_code,))
 
+        result = cursor.fetchone()
+
+        country_id = result["StateID"]
+                       
         print(f"Country ID for Country Code ({country_code}): {country_id}")
 
         whed_cred = {
