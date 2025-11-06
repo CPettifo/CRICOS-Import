@@ -4,6 +4,7 @@ import pymysql, cryptography
 from dotenv import load_dotenv
 import os, tempfile
 from openpyxl import load_workbook, Workbook
+from collections import Counter
 
 def main(masterlist_path, output_path):
     # Create a new dict of institutions
@@ -46,6 +47,7 @@ def main(masterlist_path, output_path):
     unmatched_creds_list = set()
     matched_fos = 0
     unmatched_fos = 0
+    unmatched_fos_list = Counter()
 
     for inst in insts:
         # skip institition if it hasn't been categorised as "confirmed"
@@ -65,15 +67,19 @@ def main(masterlist_path, output_path):
                 fos_level_2 = str(row[6])
                 fos_level_3 = str(row[7])
                 
-                # Check that the credential is one that is "WHED-Level"
-                temp = 0
+                # Check that the credential is one that we want to store in the WHED
+
                 whed_level_codes = ["6B", "6C", "7A", "7B", "7C"]
-                for whed_cred in whed_creds:
-                    if whed_cred["cred_name"] == course_level and whed_cred["cred_level_code"] in whed_level_codes:
-                        matched_creds += 1
-                        temp += 1
-                        break
-                if temp < 1:
+                
+
+                match = any(
+                    whed_cred["cred_name"] == course_level and whed_cred["cred_level_code"] in whed_level_codes
+                    for whed_cred in whed_creds
+                )
+
+                if match:
+                    matched_creds += 1
+                else:
                     unmatched_creds += 1
                     unmatched_creds_list.add(course_level)
                 
@@ -96,7 +102,12 @@ def main(masterlist_path, output_path):
                 cred_code = get_cred_code(whed_creds, ext_degree)
 
                 # Attempt to match by fos_code
-                fos_code = get_fos_code(whed_fos, ext_degree)
+                fos_code, course_field = get_fos_code(whed_fos, ext_degree)
+                if fos_code == "????":
+                    unmatched_fos += 1
+                    unmatched_fos_list[course_field] += 1
+                else:
+                    matched_fos += 1
 
 
                 # Assign the degree (cred (bachelor, masters) + field of study (compsci, history)) to a variable
@@ -106,10 +117,12 @@ def main(masterlist_path, output_path):
                     "fos_code": fos_code,
                     "course_name": ext_degree["course_name"]
                 }
+                if (processed % 100 == 0):
+                    print(f"Processed credentials: {processed}")
 
-                print(f"Processed credentials: {processed}")
-
-    
+    print(f"List of unmatched Fields of study: \n")
+    for fos, count in unmatched_fos_list.most_common():
+        print(f"{fos}: {count}")
     print(f"Credentials not in WHED List: {unmatched_creds}\nList: {unmatched_creds_list}\n-----------------------------------------------------------\n")
     print(f"\n\nTotal Records Processed: {processed}\n-----------------------------------------------------------\n\nMatched Credentials: {matched_creds}\nUnmatched Credentials: {unmatched_creds}")
     print(f"\n-----------------------------------------------------------\n\nMatched FOS: {matched_fos}\nUnmatched FOS: {unmatched_fos}\n\n-----------------------------------------------------------\n")
@@ -164,6 +177,32 @@ def get_cred_code(whed_creds, ext_degree):
     return "1138"
 
 def get_fos_code(whed_fos, ext_degree):
+    # First we need to turn the string into substrings, i.e. Bachelor of Computer Science -> Computer Science
+    course_name = ext_degree["course_name"]
+    strings = []
+    if " of " in course_name:
+        strings = course_name.split(" of ")
+    elif " in " in course_name:
+        strings = course_name.split(" in ")
+    else:
+        strings = ["Test", "Unknown"]
+    course_field = strings[1]
+
+    match = any(
+    whed_field["FOSDisplay"] == course_field
+    for whed_field in whed_fos
+    )
+
+    if match:
+        # get fos code, for now return 1111
+        return 1111, course_field
+
+
+    if not match:
+        print(f"--------------------------\nNot a match\nExternal Degree: {course_name}\nField Name: {course_field}\n--------------------------")
+        return "????", course_field
+    
+
 
     #TODO Match Field to appropriate whed FOS using the following hierarchy
     # If any of the FOS fields match, use that
