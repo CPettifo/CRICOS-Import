@@ -30,7 +30,7 @@ def main(masterlist_path, output_path):
   
 
     # get list of whed credentials from whed_levels
-    whed_creds = get_creds(whed_levels, cursor)
+    whed_creds = get_whed_creds(whed_levels, cursor)
 
 
     # get list of fos in WHED from workbook
@@ -178,7 +178,8 @@ def get_insts(output_path):
 
     return insts
 
-def get_creds(whed_levels, cursor):
+# Returns a list of credentials in the WHED.
+def get_whed_creds(whed_levels, cursor):
     whed_creds = []
     for row in whed_levels.iter_rows(min_row=2, values_only = True):
         cred_name = str(row[0])
@@ -186,18 +187,24 @@ def get_creds(whed_levels, cursor):
         country_code = str(row[2])
 
         # get country ID
-        cursor.execute(f"SELECT StateID, COUNTRY FROM whed_state WHERE CountryCode = %s", (country_code,))
-
+        cursor.execute(f"SELECT StateID FROM whed_state WHERE CountryCode = %s", (country_code,))
         result = cursor.fetchone()
-
         country_id = result["StateID"]
+
+        # get CredID of credential using credential name and country ID
+        cursor.execute(f"SELECT CredID FROM whed_cred WHERE StateID = %s", (country_id))
+        result = cursor.fetchone()
+        cred_id = result["CredID"]
                        
-        print(f"Country ID for Country Code ({country_code}): {country_id}")
 
         whed_cred = {
             "cred_name": cred_name,
-            "cred_code": cred_level_code
+            "cred_level_code": cred_level_code,
+            "cred_id": cred_id,
+            "country_id": country_id
         }
+        print(whed_cred)
         whed_creds.append(whed_cred)
+        
     return whed_creds
     
