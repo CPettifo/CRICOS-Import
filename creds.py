@@ -33,14 +33,19 @@ def main(masterlist_path, output_path):
     whed_creds = get_whed_creds(whed_levels, cursor)
 
 
-    # get list of fos in WHED from workbook
-    #TODO get the fos into the workbook and synced and update the template
-    whed_fos = "spaghetti"
+    # get list of fos from the WHED
+    whed_fos = get_whed_fos(cursor)
 
     # open courses sheet
     ext_cred = wb['ext_cred']
 
+    processed = 0
     dual_qual_count = 0
+    matched_creds = 0
+    unmatched_creds = 0
+    unmatched_creds_list = set()
+    matched_fos = 0
+    unmatched_fos = 0
 
     for inst in insts:
         # skip institition if it hasn't been categorised as "confirmed"
@@ -49,38 +54,49 @@ def main(masterlist_path, output_path):
         # For each credential in sheet
         for row in ext_cred.iter_rows(min_row=2, values_only = True):
 
-
-            # If credential's institution matches the one in the loop & is not expired
+            # If credential's institution matches the one in the loop & is not expired, and is one of the credentials we keep in the WHED
             expired = str(row[2])
             if expired == "No" and inst["ext_id"] == str(row[0]):
+                processed += 1
 
-                # Assign row data to variables
-                temp_degree = {
-                    "course_level": str(row[3]),
-                    "course_name": str(row[4]),
-                    "fos_level_1": str(row[5]),
-                    "fos_level_2": str(row[6]),
-                    "fos_level_3": str(row[7]),
-                    "dual_qualification": str(row[23])
+                course_level= str(row[3])
+                course_name = str(row[4])
+                fos_level_1 = str(row[5])
+                fos_level_2 = str(row[6])
+                fos_level_3 = str(row[7])
+                
+                # Check that the credential is one that is "WHED-Level"
+                temp = 0
+                whed_level_codes = ["6B", "6C", "7A", "7B", "7C"]
+                for whed_cred in whed_creds:
+                    if whed_cred["cred_name"] == course_level and whed_cred["cred_level_code"] in whed_level_codes:
+                        matched_creds += 1
+                        temp += 1
+                        break
+                if temp < 1:
+                    unmatched_creds += 1
+                    unmatched_creds_list.add(course_level)
+                
+
+                # The degree using information from the external data source
+                ext_degree = {
+                    "course_level":course_level,
+                    "course_name": course_name,
+                    "fos_level_1": fos_level_1,
+                    "fos_level_2": fos_level_2,
+                    "fos_level_3": fos_level_3,
+                    "dual_qualification": str(row[22])
                 }
                 # increment variable if there is a dual qualification
-                if temp_degree["dual_qualification"] == "Yes":
+                if ext_degree["dual_qualification"] == "Yes":
                     dual_qual_count += 1
+                    continue
                 
-                #TODO Match whed credential code
-                cred_code = get_cred_code(whed_creds, temp_degree)
+                # Match whed credential code
+                cred_code = get_cred_code(whed_creds, ext_degree)
 
-
-                #TODO Match Field to appropriate whed FOS using the following hierarchy
-                    # If any of the FOS fields match, use that
-                        # Get WHED FOS Code and add it to a dict
-                    # If a shaved version of the credential name matches a WHED FOS field
-                        # Get WHED FOS Code and add it to a dict
-                    # If there is a fuzzy match
-                        # Add the cred to the "to be sorted" category, and add to a bucket
-                        # By bucket I mean basically to have all unsorted categories matched together, so there could potentially be 100 instances of a
-                        # non-matched field (e.g. Mobile Programming) that could then be categorised by a Data Officer at the end of the program
-                fos_code = get_fos_code(whed_fos, temp_degree)
+                # Attempt to match by fos_code
+                fos_code = get_fos_code(whed_fos, ext_degree)
 
 
                 # Assign the degree (cred (bachelor, masters) + field of study (compsci, history)) to a variable
@@ -88,10 +104,15 @@ def main(masterlist_path, output_path):
                     "org_id": inst["whed_id"],
                     "cred_code": cred_code,
                     "fos_code": fos_code,
-                    "course_name": temp_degree["course_name"]
+                    "course_name": ext_degree["course_name"]
                 }
 
+                print(f"Processed credentials: {processed}")
 
+    
+    print(f"Credentials not in WHED List: {unmatched_creds}\nList: {unmatched_creds_list}\n-----------------------------------------------------------\n")
+    print(f"\n\nTotal Records Processed: {processed}\n-----------------------------------------------------------\n\nMatched Credentials: {matched_creds}\nUnmatched Credentials: {unmatched_creds}")
+    print(f"\n-----------------------------------------------------------\n\nMatched FOS: {matched_fos}\nUnmatched FOS: {unmatched_fos}\n\n-----------------------------------------------------------\n")
     print(f"There were {dual_qual_count} valid dual qualifications processed")
     exit
 
@@ -135,14 +156,24 @@ def whed_connect():
     )
     return connection
 
-# takes the current row of the credentials table and the whed_levels sheet to try to return the credential code
-def get_cred_code(row, whed_creds):
+# takes the current row of the credentials table and the whed_levels sheet to try match and return the credential code
+def get_cred_code(whed_creds, ext_degree):
    
 
 
     return "1138"
 
-def get_fos_code(row, temp_degree):
+def get_fos_code(whed_fos, ext_degree):
+
+    #TODO Match Field to appropriate whed FOS using the following hierarchy
+    # If any of the FOS fields match, use that
+        # Get WHED FOS Code and add it to a dict
+    # If a shaved version of the credential name matches a WHED FOS field
+        # Get WHED FOS Code and add it to a dict
+    # If there is a fuzzy match
+        # Add the cred to the "to be sorted" category, and add to a bucket
+        # By bucket I mean basically to have all unsorted categories matched together, so there could potentially be 100 instances of a
+        # non-matched field (e.g. Mobile Programming) that could then be categorised by a Data Officer at the end of the program
     #print("FOS Code Row: ", row)
     return "1111"
 
@@ -203,8 +234,24 @@ def get_whed_creds(whed_levels, cursor):
             "cred_id": cred_id,
             "country_id": country_id
         }
-        print(whed_cred)
+        #print(whed_cred)
         whed_creds.append(whed_cred)
-        
+
     return whed_creds
     
+def get_whed_fos(cursor):
+    cursor.execute(f"SELECT FOSCode, FOSLevel1, FOSLevel2, FOSLevel3, FOSDisplay FROM whed_lex_fos ORDER BY FOSLevel1, FOSLevel2, FOSLevel3")
+    results = cursor.fetchall()
+    whed_fos = []
+
+    for result in results:
+        fos = {
+            "FOSCode": result["FOSCode"],
+            "FOSDisplay": result["FOSDisplay"],
+            "FOSLevel1": result["FOSLevel1"],
+            "FOSLevel2": result["FOSLevel2"],
+            "FOSLevel3": result["FOSLevel3"]
+        }
+        whed_fos.append(fos)
+
+    return whed_fos
